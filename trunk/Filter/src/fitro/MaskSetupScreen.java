@@ -1,5 +1,7 @@
 package fitro;
 
+import guicomponents.GAlign;
+import guicomponents.GButton;
 import guicomponents.GCScheme;
 import guicomponents.GComponent;
 import guicomponents.GFont;
@@ -19,6 +21,7 @@ public class MaskSetupScreen extends PApplet {
 	
 	GLabel labelMatrixSize;
 	GTextField matrixW, matrixH;
+	GButton btnClearMatrix;
 	
 	static final int MAX_W = 11;
 	static final int MAX_H = 11;
@@ -32,7 +35,7 @@ public class MaskSetupScreen extends PApplet {
 	boolean matrixSizeModified = true;
 	boolean matrixWeightModified = true;
 
-	int cellSize = 20;
+	int cellSize = 25;
 
 	private int[][] mask = new int[w][h];
 
@@ -44,6 +47,8 @@ public class MaskSetupScreen extends PApplet {
 		matrixH = new GTextField(this, Integer.toString(h), 15, 40, 30, 20, false); // x,y,width,height
 		matrixW = new GTextField(this, Integer.toString(w), 60, 40, 30, 20, false);
 		labelMatrixSize = new GLabel(this, "Tamanho da Matriz", 10,10,170,30);
+		btnClearMatrix = new GButton(this, "Limpar", 200, 40, 80, 25);
+		btnClearMatrix.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		
 		size(800, 500);
 		font = loadFont("C://ArialMT-16.vlw");
@@ -51,11 +56,7 @@ public class MaskSetupScreen extends PApplet {
 		textFont(font, 16);
 		img = loadImage("C://ICS.png");
 		img.resize(500, 500);
-//		for (int i = 0; i < w; i++) {
-//			for (int j = 0; j < h; j++) {
-//				//mask[i][j] = 1;
-//			}
-//		}
+
 	}
 
 	@Override
@@ -64,6 +65,8 @@ public class MaskSetupScreen extends PApplet {
 		if(matrixWeightModified || matrixSizeModified) {
 			background(255);
 			drawSizeInput();
+			btnClearMatrix.draw();
+			
 			filtered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h,
 					w / 2, h / 2, img);
 			image(filtered, 300, 0, 500, 500);
@@ -72,6 +75,8 @@ public class MaskSetupScreen extends PApplet {
 		}
 		
 		handleMatrixSizeEvents();
+		handleButtonEvents();
+		
 	}
 
 	public PImage applyConvolution(float[][] mask, int maskWidth,
@@ -203,6 +208,17 @@ public class MaskSetupScreen extends PApplet {
 			}
 		}
 	}
+	
+	private void handleButtonEvents() {
+		  if (btnClearMatrix.eventType == GButton.PRESSED) {
+			  for (int i = 0; i < w; i++) {
+					for (int j = 0; j < h; j++) {
+						mask[i][j] = 0;
+					}
+				}
+			  matrixWeightModified = true;
+		  }
+	}	
 
 	
 }
