@@ -29,8 +29,8 @@ public class MaskSetupScreen extends PApplet {
 	int matrixOffsetX = 5;
 	int matrixOffsetY = 80;
 	
-	boolean matrixSizeModified = false;
-	//boolean matrixModified = false;
+	boolean matrixSizeModified = true;
+	boolean matrixWeightModified = true;
 
 	int cellSize = 20;
 
@@ -60,15 +60,18 @@ public class MaskSetupScreen extends PApplet {
 
 	@Override
 	public void draw() {
-		background(255);
 		
-		drawSizeInput();
+		if(matrixWeightModified || matrixSizeModified) {
+			background(255);
+			drawSizeInput();
+			filtered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h,
+					w / 2, h / 2, img);
+			image(filtered, 300, 0, 500, 500);
+			this.drawMatrix(mask, w, h);
+			matrixWeightModified = matrixSizeModified = false;
+		}
+		
 		handleMatrixSizeEvents();
-		
-		filtered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h,
-				w / 2, h / 2, img);
-		image(filtered, 300, 0, 500, 500);
-		this.drawMatrix(mask, w, h);
 	}
 
 	public PImage applyConvolution(float[][] mask, int maskWidth,
@@ -120,11 +123,9 @@ public class MaskSetupScreen extends PApplet {
 	}
 	
 	private void drawSizeInput(){
-		
 		matrixH.draw();
 		matrixW.draw();
 		labelMatrixSize.draw();
-		
 	}
 
 	private void drawMatrix(int[][] matrix, int w, int h) {
@@ -164,8 +165,10 @@ public class MaskSetupScreen extends PApplet {
 			if (mouseButton == 37) {
 				// left click
 				mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY) / cellSize]++;
+				matrixWeightModified = true;
 			} else if (mouseButton == 39) {
 				mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY) / cellSize]--;
+				matrixWeightModified = true;
 			}
 		}
 	}
@@ -175,8 +178,6 @@ public class MaskSetupScreen extends PApplet {
 				mouseY < matrixOffsetY + cellSize * h && mouseY > matrixOffsetY;
 	}
 	
-	// Handle TextField events
-	// Three types of event are reported
 	// CHANGED     The text has been changed
 	// SET         The text has been set programmatically using setText()
 	//	             this will not generate a CHANGED event as well
