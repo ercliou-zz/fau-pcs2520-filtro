@@ -36,8 +36,10 @@ public class MaskSetupScreen extends PApplet {
 	boolean matrixWeightModified = true;
 
 	int cellSize = 25;
+	int clickModifier = 1;
 
 	private int[][] mask = new int[w][h];
+	private boolean isKeyPressed = false;
 
 	@Override
 	public void setup() {
@@ -54,7 +56,7 @@ public class MaskSetupScreen extends PApplet {
 		font = loadFont("C://ArialMT-16.vlw");
 		textAlign(CENTER);
 		textFont(font, 16);
-		img = loadImage("C://ICS.png");
+		img = loadImage("C://file.jpg");
 		img.resize(500, 500);
 
 	}
@@ -153,7 +155,7 @@ public class MaskSetupScreen extends PApplet {
 		int total = 0;
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				total += matrix[i][j];
+				total += Math.abs(matrix[i][j]);
 			}
 		}
 		float[][] normalized = new float[w][h];
@@ -169,10 +171,10 @@ public class MaskSetupScreen extends PApplet {
 		if (mouseInsideMatrix()) {
 			if (mouseButton == 37) {
 				// left click
-				mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY) / cellSize]++;
+				mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY) / cellSize]+=clickModifier;
 				matrixWeightModified = true;
 			} else if (mouseButton == 39) {
-				mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY) / cellSize]--;
+				mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY) / cellSize]-=clickModifier;
 				matrixWeightModified = true;
 			}
 		}
@@ -218,7 +220,19 @@ public class MaskSetupScreen extends PApplet {
 				}
 			  matrixWeightModified = true;
 		  }
-	}	
+	}
+	
+	public void keyPressed(){
+		if(keyCode>=49 && key<=57 && !isKeyPressed){
+			isKeyPressed=true;
+			clickModifier=keyCode-48;
+		}
+	}
+	
+	public void keyReleased(){
+		isKeyPressed=false;
+		clickModifier=1;
+	}
 
 	
 }
