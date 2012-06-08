@@ -1,5 +1,10 @@
 package fitro;
 
+import guicomponents.GCScheme;
+import guicomponents.GComponent;
+import guicomponents.GFont;
+import guicomponents.GLabel;
+import guicomponents.GTextField;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
@@ -11,9 +16,21 @@ public class MaskSetupScreen extends PApplet {
 	private PImage img;
 	private PImage filtered;
 	private PFont font;
+	
+	GLabel labelMatrixSize;
+	GTextField matrixW, matrixH;
+	
+	static final int MAX_W = 11;
+	static final int MAX_H = 11;
 
-	int w = 11;
-	int h = 11;
+	int w = MAX_W;
+	int h = MAX_H;
+	
+	int matrixOffsetX = 5;
+	int matrixOffsetY = 80;
+	
+	boolean matrixSizeModified = false;
+	//boolean matrixModified = false;
 
 	int cellSize = 20;
 
@@ -21,22 +38,33 @@ public class MaskSetupScreen extends PApplet {
 
 	@Override
 	public void setup() {
+		
+		GComponent.globalColor = GCScheme.getColor(this,  GCScheme.GREEN_SCHEME);
+		GComponent.globalFont = GFont.getFont(this, "Arial", 16);
+		matrixH = new GTextField(this, Integer.toString(h), 15, 40, 30, 20, false); // x,y,width,height
+		matrixW = new GTextField(this, Integer.toString(w), 60, 40, 30, 20, false);
+		labelMatrixSize = new GLabel(this, "Tamanho da Matriz", 10,10,170,30);
+		
 		size(800, 500);
 		font = loadFont("C://ArialMT-16.vlw");
 		textAlign(CENTER);
 		textFont(font, 16);
-		img = loadImage("C://file.jpg");
+		img = loadImage("C://ICS.png");
 		img.resize(500, 500);
-		for (int i = 0; i < w; i++) {
-			for (int j = 0; j < h; j++) {
-				//mask[i][j] = 1;
-			}
-		}
+//		for (int i = 0; i < w; i++) {
+//			for (int j = 0; j < h; j++) {
+//				//mask[i][j] = 1;
+//			}
+//		}
 	}
 
 	@Override
 	public void draw() {
 		background(255);
+		
+		drawSizeInput();
+		handleMatrixSizeEvents();
+		
 		filtered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h,
 				w / 2, h / 2, img);
 		image(filtered, 300, 0, 500, 500);
@@ -90,6 +118,14 @@ public class MaskSetupScreen extends PApplet {
 		}
 		return color((int) rtotal, (int) gtotal, (int) btotal);
 	}
+	
+	private void drawSizeInput(){
+		
+		matrixH.draw();
+		matrixW.draw();
+		labelMatrixSize.draw();
+		
+	}
 
 	private void drawMatrix(int[][] matrix, int w, int h) {
 		for (int i = 0; i < w; i++) {
@@ -99,9 +135,9 @@ public class MaskSetupScreen extends PApplet {
 				} else {
 					fill(168, 244, 149);
 				}
-				rect(i * cellSize, j * cellSize, cellSize, cellSize);
+				rect(matrixOffsetX + i * cellSize, matrixOffsetY + j * cellSize, cellSize, cellSize);
 				fill(0);
-				text((int) matrix[i][j], i * cellSize + cellSize / 2, j
+				text((int) matrix[i][j], matrixOffsetX + i * cellSize + cellSize / 2, matrixOffsetY + j
 						* cellSize + cellSize / 2 + 7);
 			}
 		}
@@ -124,13 +160,48 @@ public class MaskSetupScreen extends PApplet {
 	}
 
 	public void mouseClicked() {
-		if (mouseX < cellSize * w && mouseY < cellSize * h) {
+		if (mouseInsideMatrix()) {
 			if (mouseButton == 37) {
 				// left click
-				mask[mouseX / cellSize][mouseY / cellSize]++;
+				mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY) / cellSize]++;
 			} else if (mouseButton == 39) {
-				mask[mouseX / cellSize][mouseY / cellSize]--;
+				mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY) / cellSize]--;
 			}
 		}
 	}
+	
+	private boolean mouseInsideMatrix(){
+		return mouseX < matrixOffsetX + cellSize * w && mouseX > matrixOffsetX && 
+				mouseY < matrixOffsetY + cellSize * h && mouseY > matrixOffsetY;
+	}
+	
+	// Handle TextField events
+	// Three types of event are reported
+	// CHANGED     The text has been changed
+	// SET         The text has been set programmatically using setText()
+	//	             this will not generate a CHANGED event as well
+	// ENTERED     The enter key has been pressed
+	private void handleMatrixSizeEvents(){
+		matrixSizeModified = false;
+		
+		if(!matrixW.getText().equals("") && !matrixH.equals("")) {
+		
+			if(matrixW.getEventType() == GTextField.CHANGED)  {
+				int newW = Integer.parseInt(matrixW.getText());
+				if(newW <= MAX_W) {
+					matrixSizeModified = true;
+					w = newW;
+				}
+				
+			} else if (matrixH.getEventType() == GTextField.CHANGED) {
+				int newH = Integer.parseInt(matrixH.getText());
+				if(newH <= MAX_H) {
+					matrixSizeModified = true;
+					h = newH;
+				}
+			}
+		}
+	}
+
+	
 }
