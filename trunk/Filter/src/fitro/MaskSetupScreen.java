@@ -141,6 +141,11 @@ public class MaskSetupScreen extends PApplet {
 						* mask[i][j];
 			}
 		}
+		if (((int) rtotal == 0) && ((int) gtotal == 0) && ((int) btotal == 0)) {
+			rtotal = red(original[(heightOffset) * img.width + (widthOffset)]);
+			gtotal = green(original[(heightOffset) * img.width + (widthOffset)]);
+			btotal = blue(original[(heightOffset) * img.width + (widthOffset)]);
+		}
 		return color((int) rtotal, (int) gtotal, (int) btotal);
 	}
 	
