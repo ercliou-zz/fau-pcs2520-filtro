@@ -21,7 +21,7 @@ public class MaskSetupScreen extends PApplet {
 	
 	GLabel labelMatrixSize;
 	GTextField matrixW, matrixH;
-	GButton btnClearMatrix;
+	GButton btnClearMatrix, btnFilter01, btnFilter02, btnFilter03, btnFilter04, btnFilter05, btnFilter06;
 	
 	static final int MAX_W = 11;
 	static final int MAX_H = 11;
@@ -51,11 +51,25 @@ public class MaskSetupScreen extends PApplet {
 		labelMatrixSize = new GLabel(this, "Tamanho da Matriz", 10,10,170,30);
 		btnClearMatrix = new GButton(this, "Limpar", 200, 40, 80, 25);
 		btnClearMatrix.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		btnFilter01 = new GButton(this, "Blur", 10, 380, 80, 25);
+		btnFilter01.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		btnFilter02 = new GButton(this, "A", 100, 380, 80, 25);
+		btnFilter02.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		btnFilter03 = new GButton(this, "B", 190, 380, 80, 25);
+		btnFilter03.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		btnFilter04 = new GButton(this, "X", 10, 420, 80, 25);
+		btnFilter04.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		btnFilter05 = new GButton(this, "Y", 100, 420, 80, 25);
+		btnFilter05.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		btnFilter06 = new GButton(this, "Z", 190, 420, 80, 25);
+		btnFilter06.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		
 		size(800, 500);
+		//font = loadFont("/Users/maryliagutierrez/Documents/projFau/Filtros/lib/ArialMT-16.vlw");
 		font = loadFont("C://ArialMT-16.vlw");
 		textAlign(CENTER);
 		textFont(font, 16);
+		//img = loadImage("/Users/maryliagutierrez/Downloads/file.jpg");
 		img = loadImage("C://file.jpg");
 		img.resize(500, 500);
 
@@ -68,6 +82,7 @@ public class MaskSetupScreen extends PApplet {
 			background(255);
 			drawSizeInput();
 			btnClearMatrix.draw();
+			
 			
 			filtered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h,
 					w / 2, h / 2, img);
@@ -220,6 +235,79 @@ public class MaskSetupScreen extends PApplet {
 				}
 			  matrixWeightModified = true;
 		  }
+		  if (btnFilter01.eventType == GButton.PRESSED) {
+			  w = 5;
+			  h = 5;
+			  for (int i = 0; i < w; i++) {
+					for (int j = 0; j < h; j++) {
+						mask[i][j] = 1;
+						if (i == 2 || j == 2) {
+							mask[i][j] = 5;
+						}
+						else if (i == j || (j == (4 - i))) {
+							mask[i][j] = 3;
+						}
+					}
+				}
+			  matrixWeightModified = true;
+		  }
+		  if (btnFilter02.eventType == GButton.PRESSED) {
+			  w = 5;
+			  h = 5;
+			  for (int i = 0; i < w; i++) {
+					for (int j = 0; j < h; j++) {
+						mask[i][j] = 0;
+					}
+				}
+			  mask[2][2] = 1;
+			  matrixWeightModified = true;
+		  }
+		  if (btnFilter03.eventType == GButton.PRESSED) {
+			  w = 7;
+			  h = 7;
+			  for (int i = 0; i < w; i++) {
+					for (int j = 0; j < h; j++) {
+						mask[i][j] = 0;
+					}
+				}
+			  mask[3][3] = 1;
+			  matrixWeightModified = true;
+		  }
+		  if (btnFilter04.eventType == GButton.PRESSED) {
+			  w = 9;
+			  h = 9;
+			  for (int i = 0; i < w; i++) {
+					for (int j = 0; j < h; j++) {
+						mask[i][j] = 0;
+					}
+				}
+			  mask[4][4] = 1;
+			  matrixWeightModified = true;
+		  }
+		  if (btnFilter05.eventType == GButton.PRESSED) {
+			  w = 9;
+			  h = 9;
+			  for (int i = 0; i < w; i++) {
+					for (int j = 0; j < h; j++) {
+						mask[i][j] = 0;
+					}
+				}
+			  mask[4][4] = 1;
+			  matrixWeightModified = true;
+		  }
+		  if (btnFilter06.eventType == GButton.PRESSED) {
+			  w = 11;
+			  h = 11;
+			  for (int i = 0; i < w; i++) {
+					for (int j = 0; j < h; j++) {
+						mask[i][j] = 0;
+					}
+				}
+			  mask[4][4] = 1;
+			  matrixWeightModified = true;
+		  }
+		  
+
 	}
 	
 	public void keyPressed(){
