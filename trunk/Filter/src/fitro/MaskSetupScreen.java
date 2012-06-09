@@ -40,6 +40,7 @@ public class MaskSetupScreen extends PApplet {
 
 	private int[][] mask = new int[w][h];
 	private boolean isKeyPressed = false;
+	private boolean isNegative = false;
 
 	@Override
 	public void setup() {
@@ -53,7 +54,7 @@ public class MaskSetupScreen extends PApplet {
 		btnClearMatrix.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		btnFilter01 = new GButton(this, "Blur", 10, 380, 80, 25);
 		btnFilter01.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter02 = new GButton(this, "A", 100, 380, 80, 25);
+		btnFilter02 = new GButton(this, "Negative", 100, 380, 80, 25);
 		btnFilter02.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		btnFilter03 = new GButton(this, "B", 190, 380, 80, 25);
 		btnFilter03.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
@@ -145,6 +146,9 @@ public class MaskSetupScreen extends PApplet {
 			rtotal = red(original[(heightOffset) * img.width + (widthOffset)]);
 			gtotal = green(original[(heightOffset) * img.width + (widthOffset)]);
 			btotal = blue(original[(heightOffset) * img.width + (widthOffset)]);
+		}
+		if (isNegative) {
+			return color(255 - (int) rtotal, 255 - (int) gtotal, 255 - (int) btotal);
 		}
 		return color((int) rtotal, (int) gtotal, (int) btotal);
 	}
@@ -239,6 +243,7 @@ public class MaskSetupScreen extends PApplet {
 					}
 				}
 			  matrixWeightModified = true;
+			  isNegative = false;
 		  }
 		  if (btnFilter01.eventType == GButton.PRESSED) {
 			  w = 5;
@@ -255,6 +260,7 @@ public class MaskSetupScreen extends PApplet {
 					}
 				}
 			  matrixWeightModified = true;
+			  isNegative = false;
 		  }
 		  if (btnFilter02.eventType == GButton.PRESSED) {
 			  w = 5;
@@ -264,8 +270,8 @@ public class MaskSetupScreen extends PApplet {
 						mask[i][j] = 0;
 					}
 				}
-			  mask[2][2] = 1;
 			  matrixWeightModified = true;
+			  isNegative = true;
 		  }
 		  if (btnFilter03.eventType == GButton.PRESSED) {
 			  w = 7;
@@ -275,8 +281,8 @@ public class MaskSetupScreen extends PApplet {
 						mask[i][j] = 0;
 					}
 				}
-			  mask[3][3] = 1;
 			  matrixWeightModified = true;
+			  isNegative = false;
 		  }
 		  if (btnFilter04.eventType == GButton.PRESSED) {
 			  w = 9;
@@ -286,8 +292,8 @@ public class MaskSetupScreen extends PApplet {
 						mask[i][j] = 0;
 					}
 				}
-			  mask[4][4] = 1;
 			  matrixWeightModified = true;
+			  isNegative = false;
 		  }
 		  if (btnFilter05.eventType == GButton.PRESSED) {
 			  w = 9;
@@ -297,8 +303,8 @@ public class MaskSetupScreen extends PApplet {
 						mask[i][j] = 0;
 					}
 				}
-			  mask[4][4] = 1;
 			  matrixWeightModified = true;
+			  isNegative = false;
 		  }
 		  if (btnFilter06.eventType == GButton.PRESSED) {
 			  w = 11;
@@ -308,8 +314,8 @@ public class MaskSetupScreen extends PApplet {
 						mask[i][j] = 0;
 					}
 				}
-			  mask[4][4] = 1;
 			  matrixWeightModified = true;
+			  isNegative = false;
 		  }
 		  
 
