@@ -100,19 +100,19 @@ public class MaskSetupScreen extends PApplet {
 	}
 
 	public PImage applyConvolution(float[][] mask, int maskWidth,
-			int maskHeight, int maskCenterWidth, int maskCenterHeight,
+			int maskHeight, int maskCenterX, int maskCenterY,
 			PImage img) {
 
 		PImage resultImg = createImage(img.width, img.height, RGB);
 		resultImg.loadPixels();
 
-		for (int j = maskCenterHeight; j < img.height + maskCenterHeight
+		for (int j = maskCenterY; j < img.height + maskCenterY
 				- maskHeight + 1; j++) {
-			for (int i = maskCenterWidth; i < img.width + maskCenterWidth
+			for (int i = maskCenterX; i < img.width + maskCenterX
 					- maskWidth + 1; i++) {
 				resultImg.pixels[j * img.width + i] = calculateFilteredPixel(
 						img, mask, i, j, maskWidth, maskHeight,
-						maskCenterWidth, maskCenterHeight);
+						maskCenterX, maskCenterY);
 			}
 		}
 		return resultImg;
@@ -252,11 +252,7 @@ public class MaskSetupScreen extends PApplet {
 	private void handleButtonEvents() {
 		
 		  if (btnClearMatrix.eventType == GButton.PRESSED) {
-			  for (int i = 0; i < w; i++) {
-					for (int j = 0; j < h; j++) {
-						mask[i][j] = 0;
-					}
-				}
+			  cleanMatrix();
 			  matrixWeightModified = true;
 			  matrixSizeModified = true;
 			  isThreshold = false;
@@ -287,11 +283,9 @@ public class MaskSetupScreen extends PApplet {
 		  if (btnFilter02.eventType == GButton.PRESSED) {
 			  w = 5;
 			  h = 5;
-			  for (int i = 0; i < w; i++) {
-					for (int j = 0; j < h; j++) {
-						mask[i][j] = 0;
-					}
-				}
+
+			  cleanMatrix();
+			  mask[2][2]=1; // hard coded centro
 			  matrixWeightModified = true;
 			  matrixSizeModified = true;
 			  isNegative = true;
@@ -343,12 +337,9 @@ public class MaskSetupScreen extends PApplet {
 		  if (btnFilter06.eventType == GButton.PRESSED) {
 			  w = 3;
 			  h = 3;
-			  for (int i = 0; i < w; i++) {
-					for (int j = 0; j < h; j++) {
-						mask[i][j] = 0;
-					}
-				}
-			  mask[1][1]=1;
+
+			  cleanMatrix();
+			  mask[1][1]=1; // por eqto hard coded centro
 			  matrixWeightModified = true;
 			  matrixSizeModified = true;
 			  isThreshold = true;
@@ -357,6 +348,14 @@ public class MaskSetupScreen extends PApplet {
 		  }
 		  
 
+	}
+	
+	private void cleanMatrix() {
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				mask[i][j] = 0;
+			}
+		}
 	}
 	
 	public void keyPressed(){
