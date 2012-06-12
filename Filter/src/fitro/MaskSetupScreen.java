@@ -21,7 +21,7 @@ public class MaskSetupScreen extends PApplet {
 	
 	GLabel labelMatrixSize;
 	GTextField matrixW, matrixH;
-	GButton btnClearMatrix, btnFilter01, btnFilter02, btnFilter03, btnFilter04, btnFilter05, btnFilter06;
+	GButton btnClearMatrix, btnFilter01, btnFilter02, btnFilter03, btnFilter04, btnFilter05, btnFilter06, btnFilter07;
 	
 	static final int MAX_W = 11;
 	static final int MAX_H = 11;
@@ -61,12 +61,14 @@ public class MaskSetupScreen extends PApplet {
 		btnFilter02.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		btnFilter03 = new GButton(this, "Bordas", 190, 380, 80, 25);
 		btnFilter03.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter04 = new GButton(this, "X", 10, 420, 80, 25);
+		btnFilter04 = new GButton(this, "Sharpen", 10, 420, 80, 25);
 		btnFilter04.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		btnFilter05 = new GButton(this, "P/B", 100, 420, 80, 25);
 		btnFilter05.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		btnFilter06 = new GButton(this, "Nao sei", 190, 420, 80, 25);
 		btnFilter06.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		btnFilter07 = new GButton(this, "Emboss", 10, 460, 80, 25);
+		btnFilter07.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		
 		size(800, 500);
 		//font = loadFont("/Users/maryliagutierrez/Documents/projFau/Filtros/lib/ArialMT-16.vlw");
@@ -85,7 +87,6 @@ public class MaskSetupScreen extends PApplet {
 		if(matrixWeightModified || matrixSizeModified) {
 			background(255);
 			drawSizeInput();
-			btnClearMatrix.draw();
 			
 			
 			filtered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h,
@@ -170,12 +171,12 @@ public class MaskSetupScreen extends PApplet {
 	
 	private void drawSizeInput(){
 		matrixH.setText(Integer.toString(h));
-		matrixH.draw();
+		//matrixH.draw();
 		
 		matrixW.setText(Integer.toString(w));
-		matrixW.draw();
+		//matrixW.draw();
 		
-		labelMatrixSize.draw();
+		//labelMatrixSize.draw();
 	}
 
 	private void drawMatrix(int[][] matrix, int w, int h) {
@@ -294,7 +295,7 @@ public class MaskSetupScreen extends PApplet {
 			  isWhiteBlack = false;
 			  return;
 		  } else
-		  if (btnFilter03.eventType == GButton.PRESSED) {
+		  if (btnFilter03.eventType == GButton.PRESSED) { // edges
 			  w = 3;
 			  h = 3;
 			  for (int i = 0; i < w; i++) {
@@ -311,14 +312,14 @@ public class MaskSetupScreen extends PApplet {
 				isWhiteBlack = false;
 			  return;
 		  } else
-		  if (btnFilter04.eventType == GButton.PRESSED) {
-			  w = 9;
-			  h = 9;
-			  for (int i = 0; i < w; i++) {
-					for (int j = 0; j < h; j++) {
-						mask[i][j] = 0;
-					}
-				}
+		  if (btnFilter04.eventType == GButton.PRESSED) { // sharpen
+			  w = 3;
+			  h = 3;
+			  
+			  mask[0][0] =  mask[0][2] =  mask[2][0] = mask[2][2] = 0;
+			  mask[0][1] =  mask[1][0] =  mask[1][2] = mask[2][1] = -1;
+			  mask[1][1] = 5;
+			  
 			  matrixWeightModified = true;
 			  matrixSizeModified = true;
 			  isThreshold = false;
@@ -341,7 +342,25 @@ public class MaskSetupScreen extends PApplet {
 				isNegative = false;
 				isWhiteBlack = false;
 			  return;
-		  }
+		  } else
+		  if (btnFilter07.eventType == GButton.PRESSED) { // emboss
+			  
+			  w = 3;
+			  h = 3;
+			  
+			  mask[0][0] = -2;
+			  mask[0][1] =  mask[1][0] = -1;
+			  mask[0][2] =  mask[2][0] = 0;
+			  mask[1][1] =  mask[1][2] =  mask[2][1] = 1;
+			  mask[2][2] = 2;
+			  
+			  		matrixSizeModified = true;
+				  matrixWeightModified = true;
+				  isThreshold = false;
+					isNegative = false;
+					isWhiteBlack = false;
+				  return;
+			  }
 		  
 
 	}
