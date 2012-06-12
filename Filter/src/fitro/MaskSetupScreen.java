@@ -94,8 +94,6 @@ public class MaskSetupScreen extends PApplet {
 		
 		if(matrixWeightModified || matrixSizeModified) {
 			background(255);
-			//drawSizeInput();
-			
 			
 			filtered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h,
 					w / 2, h / 2, img);
@@ -106,7 +104,7 @@ public class MaskSetupScreen extends PApplet {
 		
 		handleMatrixSizeEvents();
 		handleButtonEvents();
-		
+
 		
 		if(!helder.getText().equals("")) {
 			
@@ -187,15 +185,6 @@ public class MaskSetupScreen extends PApplet {
 		return color((int) rtotal, (int) gtotal, (int) btotal);
 	}
 	
-	private void drawSizeInput(){
-		matrixH.setText(Integer.toString(h));
-		//matrixH.draw();
-		
-		matrixW.setText(Integer.toString(w));
-		//matrixW.draw();
-		
-		//labelMatrixSize.draw();
-	}
 
 	private void drawMatrix(int[][] matrix, int w, int h) {
 		for (int i = 0; i < w; i++) {
