@@ -204,7 +204,7 @@ public class MaskSetupScreen extends PApplet {
 		float[][] normalized = new float[w][h];
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				normalized[i][j] = ((float) matrix[i][j]) / 1;
+				normalized[i][j] = ((float) matrix[i][j]) / total;
 			}
 		}
 		return normalized;
