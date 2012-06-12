@@ -23,6 +23,9 @@ public class MaskSetupScreen extends PApplet {
 	GTextField matrixW, matrixH;
 	GButton btnClearMatrix, btnFilter01, btnFilter02, btnFilter03, btnFilter04, btnFilter05, btnFilter06, btnFilter07;
 	
+	GTextField helder;
+	int helderVar;
+	
 	static final int MAX_W = 11;
 	static final int MAX_H = 11;
 
@@ -70,6 +73,11 @@ public class MaskSetupScreen extends PApplet {
 		btnFilter07 = new GButton(this, "Emboss", 10, 460, 80, 25);
 		btnFilter07.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		
+		matrixH.setText(Integer.toString(h));
+		matrixW.setText(Integer.toString(w));
+		
+		helder  = new GTextField(this, Integer.toString(w), 105, 40, 30, 20, false);
+		
 		size(800, 500);
 		//font = loadFont("/Users/maryliagutierrez/Documents/projFau/Filtros/lib/ArialMT-16.vlw");
 		font = loadFont("C://ArialMT-16.vlw");
@@ -86,7 +94,7 @@ public class MaskSetupScreen extends PApplet {
 		
 		if(matrixWeightModified || matrixSizeModified) {
 			background(255);
-			drawSizeInput();
+			//drawSizeInput();
 			
 			
 			filtered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h,
@@ -98,6 +106,16 @@ public class MaskSetupScreen extends PApplet {
 		
 		handleMatrixSizeEvents();
 		handleButtonEvents();
+		
+		
+		if(!helder.getText().equals("")) {
+			
+			if(helder.getEventType() == GTextField.CHANGED)  {
+				helderVar = Integer.parseInt(helder.getText());
+			} 
+		}
+		
+		
 		
 	}
 
