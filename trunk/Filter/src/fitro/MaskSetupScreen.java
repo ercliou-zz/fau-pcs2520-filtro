@@ -59,7 +59,7 @@ public class MaskSetupScreen extends PApplet {
 		btnFilter01.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		btnFilter02 = new GButton(this, "Negative", 100, 380, 80, 25);
 		btnFilter02.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter03 = new GButton(this, "B", 190, 380, 80, 25);
+		btnFilter03 = new GButton(this, "Bordas", 190, 380, 80, 25);
 		btnFilter03.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		btnFilter04 = new GButton(this, "X", 10, 420, 80, 25);
 		btnFilter04.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
@@ -204,7 +204,7 @@ public class MaskSetupScreen extends PApplet {
 		float[][] normalized = new float[w][h];
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				normalized[i][j] = ((float) matrix[i][j]) / total;
+				normalized[i][j] = ((float) matrix[i][j]) / 1;
 			}
 		}
 		return normalized;
@@ -295,13 +295,15 @@ public class MaskSetupScreen extends PApplet {
 			  return;
 		  } else
 		  if (btnFilter03.eventType == GButton.PRESSED) {
-			  w = 7;
-			  h = 7;
+			  w = 3;
+			  h = 3;
 			  for (int i = 0; i < w; i++) {
 					for (int j = 0; j < h; j++) {
-						mask[i][j] = 0;
+						if(i!=1 || j!=1)
+							mask[i][j] = -1;
 					}
 				}
+			  mask[1][1] = 8;
 			  matrixWeightModified = true;
 			  matrixSizeModified = true;
 			  isThreshold = false;
