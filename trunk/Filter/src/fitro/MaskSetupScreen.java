@@ -42,6 +42,7 @@ public class MaskSetupScreen extends PApplet {
 	private boolean isKeyPressed = false;
 	private boolean isNegative = false;
 	private boolean isThreshold = false;
+	private boolean isWhiteBlack = false;
 	private int threshold = 180;
 
 	@Override
@@ -62,7 +63,7 @@ public class MaskSetupScreen extends PApplet {
 		btnFilter03.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		btnFilter04 = new GButton(this, "X", 10, 420, 80, 25);
 		btnFilter04.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter05 = new GButton(this, "Y", 100, 420, 80, 25);
+		btnFilter05 = new GButton(this, "P/B", 100, 420, 80, 25);
 		btnFilter05.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		btnFilter06 = new GButton(this, "Nao sei", 190, 420, 80, 25);
 		btnFilter06.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
@@ -158,6 +159,10 @@ public class MaskSetupScreen extends PApplet {
 		
 		if (isThreshold) {
 			return  (rtotal + gtotal + btotal) > this.threshold? color(255) : color(0);
+		}
+		
+		if (isWhiteBlack) {
+			return color ((int)(rtotal*0.299+gtotal*0.587+btotal*0.144));
 		}
 		
 		return color((int) rtotal, (int) gtotal, (int) btotal);
@@ -257,6 +262,7 @@ public class MaskSetupScreen extends PApplet {
 			  matrixSizeModified = true;
 			  isThreshold = false;
 			  isNegative = false;
+			  isWhiteBlack = false;
 			  return;
 			  
 		  } else
@@ -278,18 +284,14 @@ public class MaskSetupScreen extends PApplet {
 			  matrixSizeModified = true;
 			  isThreshold = false;
 				isNegative = false;
+				isWhiteBlack = false;
 			  return;
 		  } else
 		  if (btnFilter02.eventType == GButton.PRESSED) {
-			  w = 5;
-			  h = 5;
-
-			  cleanMatrix();
-			  mask[2][2]=1; // hard coded centro
 			  matrixWeightModified = true;
-			  matrixSizeModified = true;
 			  isNegative = true;
 			  isThreshold = false;
+			  isWhiteBlack = false;
 			  return;
 		  } else
 		  if (btnFilter03.eventType == GButton.PRESSED) {
@@ -304,6 +306,7 @@ public class MaskSetupScreen extends PApplet {
 			  matrixSizeModified = true;
 			  isThreshold = false;
 				isNegative = false;
+				isWhiteBlack = false;
 			  return;
 		  } else
 		  if (btnFilter04.eventType == GButton.PRESSED) {
@@ -318,32 +321,23 @@ public class MaskSetupScreen extends PApplet {
 			  matrixSizeModified = true;
 			  isThreshold = false;
 				isNegative = false;
+				isWhiteBlack = false;
 			  return;
 		  } else
 		  if (btnFilter05.eventType == GButton.PRESSED) {
-			  w = 9;
-			  h = 9;
-			  for (int i = 0; i < w; i++) {
-					for (int j = 0; j < h; j++) {
-						mask[i][j] = 0;
-					}
-				}
 			  matrixWeightModified = true;
-			  matrixSizeModified = true;
 			  isThreshold = false;
-				isNegative = false;
+			  isWhiteBlack = true;
+			  isNegative = false;
+			  
 			  return;
 		  } else
 		  if (btnFilter06.eventType == GButton.PRESSED) {
-			  w = 3;
-			  h = 3;
 
-			  cleanMatrix();
-			  mask[1][1]=1; // por eqto hard coded centro
 			  matrixWeightModified = true;
-			  matrixSizeModified = true;
 			  isThreshold = true;
 				isNegative = false;
+				isWhiteBlack = false;
 			  return;
 		  }
 		  
