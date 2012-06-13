@@ -528,8 +528,8 @@ public class MaskSetupScreen extends PApplet {
 	}
 
 	private void cleanMatrix() {
-		for (int i = 0; i < w; i++) {
-			for (int j = 0; j < h; j++) {
+		for (int i = 0; i < MAX_W; i++) {
+			for (int j = 0; j < MAX_H; j++) {
 				mask[i][j] = 0;
 			}
 		}
