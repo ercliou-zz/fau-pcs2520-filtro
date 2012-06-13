@@ -1,5 +1,7 @@
 package fitro;
 
+import java.awt.event.KeyEvent;
+
 import guicomponents.GAlign;
 import guicomponents.GButton;
 import guicomponents.GCScheme;
@@ -32,6 +34,9 @@ public class MaskSetupScreen extends PApplet {
 
 	int w = MAX_W;
 	int h = MAX_H;
+	
+	int maskCenterX = w/2;
+	int maskCenterY = h/2;
 
 	int matrixOffsetX = 5;
 	int matrixOffsetY = 80;
@@ -44,6 +49,7 @@ public class MaskSetupScreen extends PApplet {
 
 	private int[][] mask = new int[w][h];
 	private boolean isKeyPressed = false;
+	private boolean changeMaskCenter = false;
 	private boolean isNegative = false;
 	private boolean isThreshold = false;
 	private boolean isWhiteBlack = false;
@@ -94,7 +100,7 @@ public class MaskSetupScreen extends PApplet {
 		textAlign(CENTER);
 		textFont(font, 16);
 		// img = loadImage("/Users/maryliagutierrez/Downloads/file.jpg");
-		img = loadImage("C://jackie.jpg");
+		img = loadImage("C://countryside.jpg");
 		img.resize(500, 500);
 
 	}
@@ -106,7 +112,7 @@ public class MaskSetupScreen extends PApplet {
 			background(255);
 
 			filtered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h,
-					w / 2, h / 2, img);
+					img);
 			image(filtered, 300, 0, 500, 500);
 			this.drawMatrix(mask, w, h);
 			matrixWeightModified = matrixSizeModified = false;
@@ -127,7 +133,7 @@ public class MaskSetupScreen extends PApplet {
 	}
 
 	public PImage applyConvolution(float[][] mask, int maskWidth,
-			int maskHeight, int maskCenterX, int maskCenterY, PImage img) {
+			int maskHeight, PImage img) {
 
 		PImage resultImg = createImage(img.width, img.height, RGB);
 		resultImg.loadPixels();
@@ -260,7 +266,9 @@ public class MaskSetupScreen extends PApplet {
 	private void drawMatrix(int[][] matrix, int w, int h) {
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				if (matrix[i][j] == 0) {
+				if (i == maskCenterX && j == maskCenterY) {
+					fill(240, 240, 60);
+				} else if (matrix[i][j] == 0) {
 					fill(255);
 				} else {
 					fill(168, 244, 149);
@@ -303,15 +311,24 @@ public class MaskSetupScreen extends PApplet {
 
 	public void mouseClicked() {
 		if (mouseInsideMatrix()) {
-			if (mouseButton == 37) {
-				// left click
-				mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY)
-						/ cellSize] += clickModifier;
+			
+			if (changeMaskCenter){
+				maskCenterX = (mouseX - matrixOffsetX) / cellSize;
+				maskCenterY = (mouseY - matrixOffsetY) / cellSize;
 				matrixWeightModified = true;
-			} else if (mouseButton == 39) {
-				mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY)
-						/ cellSize] -= clickModifier;
-				matrixWeightModified = true;
+				
+			} else {
+				
+				if (mouseButton == 37) {
+					// left click
+					mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY)
+							/ cellSize] += clickModifier;
+					matrixWeightModified = true;
+				} else if (mouseButton == 39) {
+					mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY)
+							/ cellSize] -= clickModifier;
+					matrixWeightModified = true;
+				}
 			}
 		}
 	}
@@ -368,6 +385,8 @@ public class MaskSetupScreen extends PApplet {
 		if (btnFilter01.eventType == GButton.PRESSED) {
 			w = 5;
 			h = 5;
+			maskCenterX = 2;
+			maskCenterY = 2;
 			for (int i = 0; i < w; i++) {
 				for (int j = 0; j < h; j++) {
 					mask[i][j] = 1;
@@ -392,6 +411,8 @@ public class MaskSetupScreen extends PApplet {
 		if (btnFilter03.eventType == GButton.PRESSED) { // edges
 			w = 3;
 			h = 3;
+			maskCenterX = 1;
+			maskCenterY = 1;
 			for (int i = 0; i < w; i++) {
 				for (int j = 0; j < h; j++) {
 					if (i != 1 || j != 1)
@@ -407,6 +428,8 @@ public class MaskSetupScreen extends PApplet {
 		if (btnFilter04.eventType == GButton.PRESSED) { // sharpen
 			w = 3;
 			h = 3;
+			maskCenterX = 1;
+			maskCenterY = 1;
 
 			mask[0][0] = mask[0][2] = mask[2][0] = mask[2][2] = 0;
 			mask[0][1] = mask[1][0] = mask[1][2] = mask[2][1] = -1;
@@ -434,6 +457,8 @@ public class MaskSetupScreen extends PApplet {
 
 			w = 3;
 			h = 3;
+			maskCenterX = 1;
+			maskCenterY = 1;
 
 			mask[0][0] = -2;
 			mask[0][1] = mask[1][0] = -1;
@@ -449,6 +474,9 @@ public class MaskSetupScreen extends PApplet {
 		if (btnFilter08.eventType == GButton.PRESSED) {   // dilation
 			w = 11;
 			h = 11;
+			maskCenterX = 5;
+			maskCenterY = 5;
+			
 			cleanMatrix();
 			for (int i = 0; i < w; i++) {
 				for (int j = 0; j < h; j++) {
@@ -466,6 +494,9 @@ public class MaskSetupScreen extends PApplet {
 		if (btnFilter09.eventType == GButton.PRESSED) {   // erosion
 			w = 11;
 			h = 11;
+			maskCenterX = 5;
+			maskCenterY = 5;
+			
 			cleanMatrix();
 			for (int i = 0; i < w; i++) {
 				for (int j = 0; j < h; j++) {
@@ -508,11 +539,16 @@ public class MaskSetupScreen extends PApplet {
 		if (keyCode >= 49 && key <= 57 && !isKeyPressed) {
 			isKeyPressed = true;
 			clickModifier = keyCode - 48;
+		} else if (keyCode == KeyEvent.VK_SHIFT) {
+			isKeyPressed = true;
+			changeMaskCenter = true;
+			//clickModifier = 0;
 		}
 	}
 
 	public void keyReleased() {
 		isKeyPressed = false;
+		changeMaskCenter = false;
 		clickModifier = 1;
 	}
 
