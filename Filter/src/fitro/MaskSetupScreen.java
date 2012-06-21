@@ -1,7 +1,5 @@
 package fitro;
 
-import java.awt.event.KeyEvent;
-
 import guicomponents.GAlign;
 import guicomponents.GButton;
 import guicomponents.GCScheme;
@@ -9,8 +7,15 @@ import guicomponents.GComponent;
 import guicomponents.GFont;
 import guicomponents.GLabel;
 import guicomponents.GTextField;
+
+import java.awt.event.KeyEvent;
+import java.io.File;
+
+import javax.swing.JFileChooser;
+
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.core.PGraphics2D;
 import processing.core.PImage;
 
 public class MaskSetupScreen extends PApplet {
@@ -24,25 +29,29 @@ public class MaskSetupScreen extends PApplet {
 	GLabel labelMatrixSize;
 	GTextField matrixW, matrixH;
 	GButton btnClearMatrix, btnFilter01, btnFilter02, btnFilter03, btnFilter04,
-			btnFilter05, btnFilter06, btnFilter07, btnFilter08, btnFilter09;
+			btnFilter05, btnFilter06, btnFilter07, btnFilter08, btnFilter09,
+			btnFilter10, btnFilter11;
 
-//	GTextField helder;
-//	int helderVar;
+	PGraphics2D setupScreen = new PGraphics2D();
+	PGraphics2D imageScreen = new PGraphics2D();
 
 	static final int MAX_W = 11;
 	static final int MAX_H = 11;
+	static final int MAX_IMG_W = 500;
+	static final int MAX_IMG_H = 500;
 
 	int w = MAX_W;
 	int h = MAX_H;
-	
-	int maskCenterX = w/2;
-	int maskCenterY = h/2;
+
+	int maskCenterX = w / 2;
+	int maskCenterY = h / 2;
 
 	int matrixOffsetX = 5;
 	int matrixOffsetY = 80;
 
 	boolean matrixSizeModified = true;
 	boolean matrixWeightModified = true;
+	boolean imgModified = false;
 
 	int cellSize = 25;
 	int clickModifier = 1;
@@ -90,25 +99,28 @@ public class MaskSetupScreen extends PApplet {
 		btnFilter09 = new GButton(this, "Erosion", 190, 460, 80, 25);
 		btnFilter09.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 
-//		helder = new GTextField(this, Integer.toString(w), 105, 40, 30, 20,
-//				false);
+		btnFilter10 = new GButton(this, "upload", 190, 480, 80, 20);
+		btnFilter10.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		btnFilter11 = new GButton(this, "save", 100, 480, 80, 20);
+		btnFilter11.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 
 		size(800, 500);
 		// font =
 		// loadFont("/Users/maryliagutierrez/Documents/projFau/Filtros/lib/ArialMT-16.vlw");
-		font = loadFont("C://ArialMT-16.vlw");
+		font = loadFont("../ArialMT-16.vlw");
+
 		textAlign(CENTER);
 		textFont(font, 16);
 		// img = loadImage("/Users/maryliagutierrez/Downloads/file.jpg");
-		img = loadImage("C://countryside.jpg");
-		img.resize(500, 500);
+		img = loadImage("C://file.jpg");
+		this.resizeImage(img);
 
 	}
 
 	@Override
 	public void draw() {
-		
-		if (matrixWeightModified || matrixSizeModified) {
+
+		if (matrixWeightModified || matrixSizeModified || imgModified) {
 			background(255);
 
 			filtered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h,
@@ -116,19 +128,12 @@ public class MaskSetupScreen extends PApplet {
 			image(filtered, 300, 0, 500, 500);
 			this.drawMatrix(mask, w, h);
 			matrixWeightModified = matrixSizeModified = false;
-			
+
 			drawSizeInput();
 		}
 
 		handleMatrixSizeEvents();
 		handleButtonEvents();
-
-//		if (!helder.getText().equals("")) {
-//
-//			if (helder.getEventType() == GTextField.CHANGED) {
-//				helderVar = Integer.parseInt(helder.getText());
-//			}
-//		}
 
 	}
 
@@ -161,9 +166,10 @@ public class MaskSetupScreen extends PApplet {
 		float rtotal = 0;
 		float gtotal = 0;
 		float btotal = 0;
-		
+
 		if (isDilation || isErosion) {
-			return dilationCalculation(img, mask, maskWidth, maskHeight, heightOffset, widthOffset);			
+			return dilationCalculation(img, mask, maskWidth, maskHeight,
+					heightOffset, widthOffset);
 		}
 
 		for (int j = 0; j < maskHeight; j++) {
@@ -179,12 +185,6 @@ public class MaskSetupScreen extends PApplet {
 						* mask[i][j];
 			}
 		}
-		// if (((int) rtotal == 0) && ((int) gtotal == 0) && ((int) btotal ==
-		// 0)) {
-		// rtotal = red(original[(heightOffset) * img.width + (widthOffset)]);
-		// gtotal = green(original[(heightOffset) * img.width + (widthOffset)]);
-		// btotal = blue(original[(heightOffset) * img.width + (widthOffset)]);
-		// }
 
 		/**** Point Operations ****/
 		if (isNegative) {
@@ -203,16 +203,15 @@ public class MaskSetupScreen extends PApplet {
 
 		return color((int) rtotal, (int) gtotal, (int) btotal);
 	}
-	
-	
-	private int dilationCalculation (PImage img, float[][] mask,
-			int maskWidth, int maskHeight, int heightOffset, int widthOffset) {
-		
+
+	private int dilationCalculation(PImage img, float[][] mask, int maskWidth,
+			int maskHeight, int heightOffset, int widthOffset) {
+
 		int[] original = img.pixels;
-		
+
 		float rFinal, gFinal, bFinal;
 		float rAux, gAux, bAux;
-		
+
 		if (isErosion) {
 			rFinal = gFinal = bFinal = 255;
 		} else { // isDilation
@@ -221,7 +220,7 @@ public class MaskSetupScreen extends PApplet {
 
 		for (int j = 0; j < maskHeight; j++) {
 			for (int i = 0; i < maskWidth; i++) {
-				if(mask[i][j]>0){
+				if (mask[i][j] > 0) {
 					rAux = red(original[(heightOffset + j) * img.width
 							+ (widthOffset + i)])
 							+ mask[i][j];
@@ -231,8 +230,8 @@ public class MaskSetupScreen extends PApplet {
 					bAux = blue(original[(heightOffset + j) * img.width
 							+ (widthOffset + i)])
 							+ mask[i][j];
-					
-					if(isErosion) {
+
+					if (isErosion) {
 						rFinal = rFinal > rAux ? rAux : rFinal;
 						gFinal = gFinal > gAux ? gAux : gFinal;
 						bFinal = bFinal > bAux ? bAux : bFinal;
@@ -244,25 +243,20 @@ public class MaskSetupScreen extends PApplet {
 				}
 			}
 		}
-		
+
 		return color((int) rFinal, (int) gFinal, (int) bFinal);
 	}
-	
-	private void drawSizeInput(){
+
+	private void drawSizeInput() {
 		matrixH.setText(Integer.toString(h));
 		matrixH.draw();
-		
+
 		matrixW.setText(Integer.toString(w));
 		matrixW.draw();
-		
-//		helder.setText(Integer.toString(helderVar));
-//		helder.draw();
-		
+
 		labelMatrixSize.draw();
 	}
 
-
-	
 	private void drawMatrix(int[][] matrix, int w, int h) {
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
@@ -286,21 +280,21 @@ public class MaskSetupScreen extends PApplet {
 	private float[][] normalizeMatrix(int[][] matrix, int w, int h) {
 		int total = 0;
 		float[][] normalized = new float[w][h];
-		
+
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
 				total += matrix[i][j];
 			}
 		}
-		
-		if(total == 0) { // TODO: WORKAROUND
+
+		if (total == 0) { // TODO: WORKAROUND
 			total = 1;
 		}
-		
-		if(isDilation || isErosion) {    // nao normaliza
+
+		if (isDilation || isErosion) { // nao normaliza
 			total = 1;
 		}
-		
+
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
 				normalized[i][j] = ((float) matrix[i][j]) / total;
@@ -311,23 +305,19 @@ public class MaskSetupScreen extends PApplet {
 
 	public void mouseClicked() {
 		if (mouseInsideMatrix()) {
-			
-			if (changeMaskCenter){
+			matrixWeightModified = true;
+			if (changeMaskCenter) {
 				maskCenterX = (mouseX - matrixOffsetX) / cellSize;
 				maskCenterY = (mouseY - matrixOffsetY) / cellSize;
-				matrixWeightModified = true;
-				
 			} else {
-				
+
 				if (mouseButton == 37) {
 					// left click
 					mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY)
 							/ cellSize] += clickModifier;
-					matrixWeightModified = true;
 				} else if (mouseButton == 39) {
 					mask[(mouseX - matrixOffsetX) / cellSize][(mouseY - matrixOffsetY)
 							/ cellSize] -= clickModifier;
-					matrixWeightModified = true;
 				}
 			}
 		}
@@ -470,17 +460,17 @@ public class MaskSetupScreen extends PApplet {
 			matrixWeightModified = true;
 			return;
 		}
-		
-		if (btnFilter08.eventType == GButton.PRESSED) {   // dilation
+
+		if (btnFilter08.eventType == GButton.PRESSED) { // dilation
 			w = 11;
 			h = 11;
 			maskCenterX = 5;
 			maskCenterY = 5;
-			
+
 			cleanMatrix();
 			for (int i = 0; i < w; i++) {
 				for (int j = 0; j < h; j++) {
-					if ( ((i-5)*(i-5) + (j-5)*(j-5)) < 16)
+					if (((i - 5) * (i - 5) + (j - 5) * (j - 5)) < 16)
 						mask[i][j] = 1;
 				}
 			}
@@ -490,17 +480,17 @@ public class MaskSetupScreen extends PApplet {
 			isDilation = true;
 			return;
 		}
-		
-		if (btnFilter09.eventType == GButton.PRESSED) {   // erosion
+
+		if (btnFilter09.eventType == GButton.PRESSED) { // erosion
 			w = 11;
 			h = 11;
 			maskCenterX = 5;
 			maskCenterY = 5;
-			
+
 			cleanMatrix();
 			for (int i = 0; i < w; i++) {
 				for (int j = 0; j < h; j++) {
-					if ( ((i-5)*(i-5) + (j-5)*(j-5)) < 16)
+					if (((i - 5) * (i - 5) + (j - 5) * (j - 5)) < 16)
 						mask[i][j] = 1;
 				}
 			}
@@ -511,7 +501,39 @@ public class MaskSetupScreen extends PApplet {
 			return;
 		}
 
+		if (btnFilter10.eventType == GButton.PRESSED) {
+			img = pickImage();
+			this.resizeImage(img);
+			return;
+		}
 
+		if (btnFilter11.eventType == GButton.PRESSED) {
+			filtered.save("C://export.png");
+			return;
+		}
+	}
+
+	private PImage pickImage() {
+		JFileChooser fc = new JFileChooser();
+		int returnVal = fc.showOpenDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			if (checkExtension(file.getName())) {
+				imgModified = true;
+				return loadImage(file.getPath());
+			}
+		}
+		return null;
+	}
+
+	private boolean checkExtension(String fileName) {
+		if (fileName.toUpperCase().endsWith("GIF")
+				|| fileName.toUpperCase().endsWith("JPG")
+				|| fileName.toUpperCase().endsWith("TGA")
+				|| fileName.toUpperCase().endsWith("PNG")) {
+			return true;
+		}
+		return false;
 	}
 
 	private boolean anyButtonPressed() {
@@ -536,13 +558,11 @@ public class MaskSetupScreen extends PApplet {
 	}
 
 	public void keyPressed() {
+		isKeyPressed = true;
 		if (keyCode >= 49 && key <= 57 && !isKeyPressed) {
-			isKeyPressed = true;
 			clickModifier = keyCode - 48;
 		} else if (keyCode == KeyEvent.VK_SHIFT) {
-			isKeyPressed = true;
 			changeMaskCenter = true;
-			//clickModifier = 0;
 		}
 	}
 
@@ -552,4 +572,18 @@ public class MaskSetupScreen extends PApplet {
 		clickModifier = 1;
 	}
 
+	private void resizeImage(PImage image) {
+		float ratio = (float) image.width / (float) image.height;
+		float fitRatio = (float) MAX_IMG_W / (float) MAX_IMG_H;
+		if (ratio > fitRatio) {
+			float wratio = (float)MAX_IMG_W/(float)image.width;
+			image.resize(MAX_IMG_W, (int)wratio*image.height);
+		}
+		else if(ratio < fitRatio){
+			float hratio = (float)MAX_IMG_H/(float)image.height;
+			image.resize((int)hratio*image.width, MAX_IMG_H);
+		}else{
+			image.resize(MAX_IMG_W, MAX_IMG_H);
+		}
+	}
 }
