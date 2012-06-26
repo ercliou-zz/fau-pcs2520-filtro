@@ -6,7 +6,6 @@ import guicomponents.GCScheme;
 import guicomponents.GComponent;
 import guicomponents.GFont;
 import guicomponents.GLabel;
-import guicomponents.GTextField;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -28,35 +27,51 @@ public class MaskSetupScreen extends PApplet {
 	private PFont font;
 
 	GLabel labelMatrixSize;
-	GTextField matrixW, matrixH;
-	GButton btnClearMatrix, btnFilter01, btnFilter02, btnFilter03, btnFilter04, btnFilter05, btnFilter06, btnFilter07, btnFilter08, btnFilter09, btnFilter10,
-			btnFilter11;
-
+	// GTextField matrixW, matrixH;
+	GButton btnClearMatrix, blurFilter, negativeFilter, edgesFilter, sharpenFilter, blackAndWhiteFilter, thresholdFilter, embossFilter, dilateFilter,
+			erosionFilter, browseButton, saveButton;
+	
 	PGraphics2D setupScreen = new PGraphics2D();
 	PGraphics2D imageScreen = new PGraphics2D();
 
 	static final int MAX_W = 11;
 	static final int MAX_H = 11;
-	static final int MAX_IMG_W = 500;
-	static final int MAX_IMG_H = 500;
+	static final int MAX_IMG_W = 575;
+	static final int MAX_IMG_H = 430;
+	static final int WINDOW_W = 950;
+	static final int WINDOW_H = 650;
+	static final int WINDOW_MARGIN = 20;
 
-	int w = MAX_W;
-	int h = MAX_H;
+	static final String BLUR_DESC = "Blur";
+	static final String SHARPEN_DESC = "Sharpen";
+	static final String EMBOSS_DESC = "emboss";
+	static final String EDGES_DESC = "edge detection";
+	static final String BLACKWHITE_DESC = "black & white";
+	static final String NEGATIVE_DESC = "negative";
+	static final String THRESHOLD_DESC = "threshold";
+	static final String DILATION_DESC = "dilation";
+	static final String EROSION_DESC = "erosion";
+	static final String DISPLAY_TEXT = "FILTROS FEDIDOS";
+	
+	
+	int maskWidth = MAX_W;
+	int maskHeight = MAX_H;
+	int maskXoffset = 0;
+	int maskYoffset = 0;
 
-	int maskCenterX = w / 2;
-	int maskCenterY = h / 2;
+	int maskCenterX = MAX_W / 2;
+	int maskCenterY = MAX_H / 2;
 
-	int matrixOffsetX = 5;
-	int matrixOffsetY = 210;
+	int matrixOffsetX = 40;
+	int matrixOffsetY = 320;
 
-	boolean matrixSizeModified = true;
-	boolean matrixWeightModified = true;
-	boolean imgModified = false;
+	boolean refreshFrame = true;
+	boolean toggledFilter = false;
 
 	int cellSize = 25;
 	int clickModifier = 1;
 
-	private int[][] mask = new int[w][h];
+	private int[][] mask = new int[MAX_W][MAX_H];
 	private boolean isKeyPressed = false;
 	private boolean changeMaskCenter = false;
 	private boolean isNegative = false;
@@ -69,47 +84,42 @@ public class MaskSetupScreen extends PApplet {
 
 	@Override
 	public void setup() {
-
 		GComponent.globalColor = GCScheme.getColor(this, GCScheme.YELLOW_SCHEME);
-		GComponent.globalFont = GFont.getFont(this, "Arial", 16);
-		matrixH = new GTextField(this, Integer.toString(h), 15, 40, 30, 20, false); // x,y,width,height
-		matrixW = new GTextField(this, Integer.toString(w), 60, 40, 30, 20, false);
-		labelMatrixSize = new GLabel(this, "Tamanho da Matriz", 10, 10, 170, 30);
-		btnClearMatrix = new GButton(this, "Limpar", 10, 520, 80, 25);
+		GComponent.globalFont = GFont.getFont(this, "Arial", 12);
+
+		blurFilter = new GButton(this, "Blur", 30, 50, 90, 25);
+		blurFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		negativeFilter = new GButton(this, "Negative", 230, 235, 90, 25);
+		negativeFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		edgesFilter = new GButton(this, "Edges", 130, 50, 90, 25);
+		edgesFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		sharpenFilter = new GButton(this, "Sharpen", 230, 50, 90, 25);
+		sharpenFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		blackAndWhiteFilter = new GButton(this, "Black & White", 30, 235, 90, 25);
+		blackAndWhiteFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		thresholdFilter = new GButton(this, "Threshold", 130, 235, 90, 25);
+		thresholdFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		embossFilter = new GButton(this, "Emboss", 30, 85, 90, 25);
+		embossFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		dilateFilter = new GButton(this, "Dilation", 130, 160, 90, 25);
+		dilateFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		erosionFilter = new GButton(this, "Erosion", 30, 160, 90, 25);
+		erosionFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+
+		btnClearMatrix = new GButton(this, "Clear", 40, 605, 90, 25);
 		btnClearMatrix.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter01 = new GButton(this, "Blur*", 10, 80, 80, 25);
-		btnFilter01.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter02 = new GButton(this, "Negative", 100, 80, 80, 25);
-		btnFilter02.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter03 = new GButton(this, "Bordas*", 190, 80, 80, 25);
-		btnFilter03.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter04 = new GButton(this, "Sharpen*", 10, 120, 80, 25);
-		btnFilter04.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter05 = new GButton(this, "P/B", 100, 120, 80, 25);
-		btnFilter05.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter06 = new GButton(this, "Threshold", 190, 120, 80, 25);
-		btnFilter06.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter07 = new GButton(this, "Emboss*", 10, 160, 80, 25);
-		btnFilter07.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter08 = new GButton(this, "Dilation", 100, 160, 80, 25);
-		btnFilter08.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter09 = new GButton(this, "Erosion", 190, 160, 80, 25);
-		btnFilter09.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		browseButton = new GButton(this, "Browse...", 740, 560, 90, 25);
+		browseButton.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		saveButton = new GButton(this, "Save", 840, 560, 90, 25);
+		saveButton.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 
-		btnFilter10 = new GButton(this, "Browse..", 390, 520, 80, 20);
-		btnFilter10.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		btnFilter11 = new GButton(this, "Save", 300, 520, 80, 20);
-		btnFilter11.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-
-		size(820, 550);
-		// font =
-		// loadFont("/Users/maryliagutierrez/Documents/projFau/Filtros/lib/ArialMT-16.vlw");
-		font = loadFont("C://ArialMT-16.vlw");
+		size(WINDOW_W, WINDOW_H);
+		font = loadFont("../ArialMT-16.vlw");
 
 		textAlign(CENTER);
 		textFont(font, 16);
 		// img = loadImage("/Users/maryliagutierrez/Downloads/file.jpg");
-		img = loadImage("C://file.jpg");
+		img = loadImage("C:/file.jpg");
 		try {
 			originalImg = (PImage) img.clone();
 		} catch (CloneNotSupportedException e) {
@@ -122,21 +132,40 @@ public class MaskSetupScreen extends PApplet {
 
 	@Override
 	public void draw() {
-
-		if (matrixWeightModified || matrixSizeModified || imgModified) {
-			background(255);
-
-			filtered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h, img);
-			image(filtered, 300 + (MAX_IMG_W - filtered.width) / 2, 0 + (MAX_IMG_H - filtered.height) / 2, filtered.width, filtered.height);
-			this.drawMatrix(mask, w, h);
-			matrixWeightModified = matrixSizeModified = false;
-
-			drawSizeInput();
+		if (refreshFrame) {
+			this.initializeLayout();
+			calculateMatrixSize(mask, MAX_W, MAX_H);
+			filtered = applyConvolution(this.normalizeMatrix(mask, MAX_W, MAX_H), maskWidth, maskHeight, img);
+			this.drawImage(filtered);
+			this.drawMatrix(mask, MAX_W, MAX_H);
+			refreshFrame = false;
 		}
-
-		handleMatrixSizeEvents();
 		handleButtonEvents();
+	}
 
+	private void initializeLayout() {
+		background(255);
+		fill(255);
+		noStroke();
+		// rect(WINDOW_MARGIN, WINDOW_MARGIN, WINDOW_W - 2 * WINDOW_MARGIN,
+		// WINDOW_H - 2 * WINDOW_MARGIN);
+		fill(0xAA, 0xD5, 0xFF);
+		rect(WINDOW_MARGIN, 20, 315, 100);
+		rect(WINDOW_MARGIN, 130, 315, 65);
+		rect(WINDOW_MARGIN, 205, 315, 65);
+		fill(255);
+		text("Filtros Lineares (Convolução)", 175, 40);
+		text("Filtros Não Lineares", 175, 150);
+		text("Operações Pontuais", 175, 225);
+		fill(0);
+		text("Matriz de Convolução", 175, 305);
+	}
+
+	private void drawImage(PImage image) {
+		noStroke();
+		fill(63);
+		rect(355, 120, MAX_IMG_W, MAX_IMG_H);
+		image(filtered, 355 + (MAX_IMG_W - image.width) / 2, 120 + (MAX_IMG_H - image.height) / 2, image.width, image.height);
 	}
 
 	public PImage applyConvolution(float[][] mask, int maskWidth, int maskHeight, PImage img) {
@@ -144,21 +173,20 @@ public class MaskSetupScreen extends PApplet {
 		PImage resultImg = createImage(img.width, img.height, RGB);
 		resultImg.loadPixels();
 
-		for (int j = maskCenterY; j < img.height + maskCenterY - maskHeight + 1; j++) {
-			for (int i = maskCenterX; i < img.width + maskCenterX - maskWidth + 1; i++) {
+		for (int j = maskCenterY - maskYoffset; j < img.height + maskCenterY - maskYoffset - maskHeight + 1; j++) {
+			for (int i = maskCenterX - maskXoffset; i < img.width + maskCenterX - maskXoffset - maskWidth + 1; i++) {
 				resultImg.pixels[j * img.width + i] = calculateFilteredPixel(img, mask, i, j, maskWidth, maskHeight, maskCenterX, maskCenterY);
 			}
 		}
 		return resultImg;
 	}
 
-	private int calculateFilteredPixel(PImage img, float[][] mask, int actualWidth, int actualHeight, int maskWidth, int maskHeight, int maskCenterWidth,
-			int maskCenterHeight) {
+	private int calculateFilteredPixel(PImage img, float[][] mask, int x, int y, int maskWidth, int maskHeight, int maskCenterWidth, int maskCenterHeight) {
 
 		int[] original = img.pixels;
 
-		int heightOffset = actualHeight - maskCenterHeight;
-		int widthOffset = actualWidth - maskCenterWidth;
+		int heightOffset = y - (maskCenterHeight - maskYoffset);
+		int widthOffset = x - (maskCenterWidth - maskXoffset);
 
 		float rtotal = 0;
 		float gtotal = 0;
@@ -170,9 +198,9 @@ public class MaskSetupScreen extends PApplet {
 
 		for (int j = 0; j < maskHeight; j++) {
 			for (int i = 0; i < maskWidth; i++) {
-				rtotal += red(original[(heightOffset + j) * img.width + (widthOffset + i)]) * mask[i][j];
-				gtotal += green(original[(heightOffset + j) * img.width + (widthOffset + i)]) * mask[i][j];
-				btotal += blue(original[(heightOffset + j) * img.width + (widthOffset + i)]) * mask[i][j];
+				rtotal += red(original[(heightOffset + j) * img.width + (widthOffset + i)]) * mask[i + maskXoffset][j + maskYoffset];
+				gtotal += green(original[(heightOffset + j) * img.width + (widthOffset + i)]) * mask[i + maskXoffset][j + maskYoffset];
+				btotal += blue(original[(heightOffset + j) * img.width + (widthOffset + i)]) * mask[i + maskXoffset][j + maskYoffset];
 			}
 		}
 
@@ -227,29 +255,32 @@ public class MaskSetupScreen extends PApplet {
 		return color((int) rFinal, (int) gFinal, (int) bFinal);
 	}
 
-	private void drawSizeInput() {
-		matrixH.setText(Integer.toString(h));
-		matrixH.draw();
-
-		matrixW.setText(Integer.toString(w));
-		matrixW.draw();
-
-		labelMatrixSize.draw();
-	}
-
 	private void drawMatrix(int[][] matrix, int w, int h) {
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				if (i == maskCenterX && j == maskCenterY) {
-					fill(240, 240, 60);
-				} else if (matrix[i][j] == 0) {
-					fill(255);
-				} else {
-					fill(168, 244, 149);
-				}
+				stroke(191);
+				fill(255);
 				rect(matrixOffsetX + i * cellSize, matrixOffsetY + j * cellSize, cellSize, cellSize);
-				fill(0);
+				fill(191);
 				text((int) matrix[i][j], matrixOffsetX + i * cellSize + cellSize / 2, matrixOffsetY + j * cellSize + cellSize / 2 + 7);
+			}
+		}
+
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				if (isActiveCell(matrix, w, h, i, j, maskCenterX, maskCenterY)) {
+					stroke(0);
+					if (i == maskCenterX && j == maskCenterY) {
+						fill(240, 240, 60);
+					} else if (matrix[i][j] == 0) {
+						fill(255);
+					} else {
+						fill(168, 244, 149);
+					}
+					rect(matrixOffsetX + i * cellSize, matrixOffsetY + j * cellSize, cellSize, cellSize);
+					fill(0);
+					text((int) matrix[i][j], matrixOffsetX + i * cellSize + cellSize / 2, matrixOffsetY + j * cellSize + cellSize / 2 + 7);
+				}
 			}
 		}
 	}
@@ -264,7 +295,7 @@ public class MaskSetupScreen extends PApplet {
 			}
 		}
 
-		if (total == 0) { // TODO: WORKAROUND
+		if (total == 0) {
 			total = 1;
 		}
 
@@ -280,9 +311,9 @@ public class MaskSetupScreen extends PApplet {
 		return normalized;
 	}
 
-	public void mouseClicked() {
+	public void mouseReleased() {
 		if (mouseInsideMatrix()) {
-			matrixWeightModified = true;
+			refreshFrame = true;
 			if (changeMaskCenter) {
 				maskCenterX = (mouseX - matrixOffsetX) / cellSize;
 				maskCenterY = (mouseY - matrixOffsetY) / cellSize;
@@ -296,193 +327,168 @@ public class MaskSetupScreen extends PApplet {
 				}
 			}
 		}
+
+		toggledFilter = false;
 	}
 
 	private boolean mouseInsideMatrix() {
-		return mouseX < matrixOffsetX + cellSize * w && mouseX > matrixOffsetX && mouseY < matrixOffsetY + cellSize * h && mouseY > matrixOffsetY;
-	}
-
-	// CHANGED The text has been changed
-	// SET The text has been set programmatically using setText()
-	// this will not generate a CHANGED event as well
-	// ENTERED The enter key has been pressed
-	private void handleMatrixSizeEvents() {
-		matrixSizeModified = false;
-
-		if (!matrixW.getText().equals("") && !matrixH.getText().equals("")) {
-
-			if (matrixW.getEventType() == GTextField.CHANGED) {
-				int newW = Integer.parseInt(matrixW.getText());
-				if (newW <= MAX_W) {
-					matrixSizeModified = true;
-					w = newW;
-				}
-
-			} else if (matrixH.getEventType() == GTextField.CHANGED) {
-				int newH = Integer.parseInt(matrixH.getText());
-				if (newH <= MAX_H) {
-					matrixSizeModified = true;
-					h = newH;
-				}
-			}
-		}
+		return mouseX < matrixOffsetX + cellSize * MAX_W && mouseX > matrixOffsetX && mouseY < matrixOffsetY + cellSize * MAX_H && mouseY > matrixOffsetY;
 	}
 
 	private void handleButtonEvents() {
+		
+		isOver();
+		
+		if (!toggledFilter) {
+			if (btnClearMatrix.eventType == GButton.PRESSED) {
+				clearMatrix();
+				initializeMatrixCenter();
+				refreshFrame = true;
+				return;
 
-		if (anyButtonPressed()) {
-			isThreshold = false;
-			isNegative = false;
-			isWhiteBlack = false;
-			isDilation = false;
-			isErosion = false;
-		}
+			}
 
-		if (btnClearMatrix.eventType == GButton.PRESSED) {
-			clearMatrix();
-			matrixWeightModified = true;
-			return;
-
-		}
-
-		if (btnFilter01.eventType == GButton.PRESSED) {
-			w = 5;
-			h = 5;
-			maskCenterX = 2;
-			maskCenterY = 2;
-			for (int i = 0; i < w; i++) {
-				for (int j = 0; j < h; j++) {
-					mask[i][j] = 1;
-					if (i == 2 || j == 2) {
-						mask[i][j] = 5;
-					} else if (i == j || (j == (4 - i))) {
-						mask[i][j] = 3;
+			if (blurFilter.eventType == GButton.PRESSED) {
+				clearMatrix();
+				maskWidth = 5;
+				maskHeight = 5;
+				maskCenterX = 5;
+				maskCenterY = 5;
+				for (int i = 3; i < 3 + maskWidth; i++) {
+					for (int j = 3; j < 3 + maskHeight; j++) {
+						mask[i][j] = 1;
+						if (i == 2 || j == 2) {
+							mask[i][j] = 5;
+						} else if (i == j || (j == (4 - i))) {
+							mask[i][j] = 3;
+						}
 					}
 				}
+				refreshFrame = true;
+				return;
 			}
-			matrixWeightModified = true;
-			matrixSizeModified = true;
-			return;
-		}
 
-		if (btnFilter02.eventType == GButton.PRESSED) {
-			matrixWeightModified = true;
-			isNegative = true;
-			return;
-		}
+			if (negativeFilter.eventType == GButton.PRESSED) {
+				refreshFrame = true;
+				isNegative = true;
+				return;
+			}
 
-		if (btnFilter03.eventType == GButton.PRESSED) { // edges
-			w = 3;
-			h = 3;
-			maskCenterX = 1;
-			maskCenterY = 1;
-			for (int i = 0; i < w; i++) {
-				for (int j = 0; j < h; j++) {
-					if (i != 1 || j != 1)
-						mask[i][j] = -1;
+			if (edgesFilter.eventType == GButton.PRESSED) { // edges
+				maskWidth = 3;
+				maskHeight = 3;
+				maskCenterX = 1;
+				maskCenterY = 1;
+				for (int i = 0; i < maskWidth; i++) {
+					for (int j = 0; j < maskHeight; j++) {
+						if (i != 1 || j != 1)
+							mask[i][j] = -1;
+					}
 				}
+				mask[1][1] = 8;
+				refreshFrame = true;
+				return;
 			}
-			mask[1][1] = 8;
-			matrixWeightModified = true;
-			matrixSizeModified = true;
-			return;
-		}
 
-		if (btnFilter04.eventType == GButton.PRESSED) { // sharpen
-			w = 3;
-			h = 3;
-			maskCenterX = 1;
-			maskCenterY = 1;
+			if (sharpenFilter.eventType == GButton.PRESSED) { // sharpen
+				maskWidth = 3;
+				maskHeight = 3;
+				maskCenterX = 1;
+				maskCenterY = 1;
 
-			mask[0][0] = mask[0][2] = mask[2][0] = mask[2][2] = 0;
-			mask[0][1] = mask[1][0] = mask[1][2] = mask[2][1] = -1;
-			mask[1][1] = 5;
+				mask[0][0] = mask[0][2] = mask[2][0] = mask[2][2] = 0;
+				mask[0][1] = mask[1][0] = mask[1][2] = mask[2][1] = -1;
+				mask[1][1] = 5;
 
-			matrixWeightModified = true;
-			matrixSizeModified = true;
-			return;
-		}
+				refreshFrame = true;
+				return;
+			}
 
-		if (btnFilter05.eventType == GButton.PRESSED) {
-			matrixWeightModified = true;
-			isWhiteBlack = true;
-			return;
-		}
-
-		if (btnFilter06.eventType == GButton.PRESSED) {
-
-			matrixWeightModified = true;
-			isThreshold = true;
-			return;
-		}
-
-		if (btnFilter07.eventType == GButton.PRESSED) { // emboss
-
-			w = 3;
-			h = 3;
-			maskCenterX = 1;
-			maskCenterY = 1;
-
-			mask[0][0] = -2;
-			mask[0][1] = mask[1][0] = -1;
-			mask[0][2] = mask[2][0] = 0;
-			mask[1][1] = mask[1][2] = mask[2][1] = 1;
-			mask[2][2] = 2;
-
-			matrixSizeModified = true;
-			matrixWeightModified = true;
-			return;
-		}
-
-		if (btnFilter08.eventType == GButton.PRESSED) { // dilation
-			w = 11;
-			h = 11;
-			maskCenterX = 5;
-			maskCenterY = 5;
-
-			clearMatrix();
-			for (int i = 0; i < w; i++) {
-				for (int j = 0; j < h; j++) {
-					if (((i - 5) * (i - 5) + (j - 5) * (j - 5)) < 16)
-						mask[i][j] = 1;
+			if (blackAndWhiteFilter.eventType == GButton.PRESSED) {
+				refreshFrame = true;
+				isWhiteBlack = true;
+				return;
+			}
+			
+			if (thresholdFilter.eventType == GButton.RELEASED) {
+				if (isThreshold == true) {
+					isThreshold = false;
+					thresholdFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+				} else {
+					isThreshold = true;
+					thresholdFilter.setColorScheme(GCScheme.RED_SCHEME);
 				}
+				refreshFrame = true;
+				toggledFilter = true;
+				return;
+			} 
+
+			if (embossFilter.eventType == GButton.PRESSED) { // emboss
+
+				maskWidth = 3;
+				maskHeight = 3;
+				maskCenterX = 1 + 4;
+				maskCenterY = 1 + 4;
+
+				mask[0 + 4][0 + 4] = -2;
+				mask[0 + 4][1 + 4] = mask[1][0] = -1;
+				mask[0 + 4][2 + 4] = mask[2][0] = 0;
+				mask[1 + 4][1 + 4] = mask[1][2] = mask[2][1] = 1;
+				mask[2 + 4][2 + 4] = 2;
+
+				refreshFrame = true;
+				return;
 			}
-			mask[5][5] = 2;
-			matrixSizeModified = true;
-			matrixWeightModified = true;
-			isDilation = true;
-			return;
-		}
 
-		if (btnFilter09.eventType == GButton.PRESSED) { // erosion
-			w = 11;
-			h = 11;
-			maskCenterX = 5;
-			maskCenterY = 5;
+			if (dilateFilter.eventType == GButton.PRESSED) { // dilation
 
-			clearMatrix();
-			for (int i = 0; i < w; i++) {
-				for (int j = 0; j < h; j++) {
-					if (((i - 5) * (i - 5) + (j - 5) * (j - 5)) < 16)
-						mask[i][j] = 1;
+				maskWidth = 11;
+				maskHeight = 11;
+				maskCenterX = 5;
+				maskCenterY = 5;
+
+				clearMatrix();
+				for (int i = 0; i < maskWidth; i++) {
+					for (int j = 0; j < maskHeight; j++) {
+						if (((i - 5) * (i - 5) + (j - 5) * (j - 5)) < 16)
+							mask[i][j] = 1;
+					}
 				}
+				mask[5][5] = 2;
+				refreshFrame = true;
+				isDilation = true;
+				return;
 			}
-			mask[5][5] = 2;
-			matrixSizeModified = true;
-			matrixWeightModified = true;
-			isErosion = true;
-			return;
-		}
 
-		if (btnFilter10.eventType == GButton.PRESSED) {
-			img = pickImage();
-			this.resizeImage(img);
-			return;
-		}
+			if (erosionFilter.eventType == GButton.PRESSED) { // erosion
+				maskWidth = 11;
+				maskHeight = 11;
+				maskCenterX = 5;
+				maskCenterY = 5;
 
-		if (btnFilter11.eventType == GButton.PRESSED) {
-			exportImage();
-			return;
+				clearMatrix();
+				for (int i = 0; i < maskWidth; i++) {
+					for (int j = 0; j < maskHeight; j++) {
+						if (((i - 5) * (i - 5) + (j - 5) * (j - 5)) < 16)
+							mask[i][j] = 1;
+					}
+				}
+				mask[5][5] = 2;
+				refreshFrame = true;
+				isErosion = true;
+				return;
+			}
+
+			if (browseButton.eventType == GButton.PRESSED) {
+				img = pickImage();
+				this.resizeImage(img);
+				return;
+			}
+
+			if (saveButton.eventType == GButton.PRESSED) {
+				exportImage();
+				return;
+			}
 		}
 	}
 
@@ -492,7 +498,7 @@ public class MaskSetupScreen extends PApplet {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			if (checkExtension(file.getName())) {
-				imgModified = true;
+				refreshFrame = true;
 				return loadImage(file.getPath());
 			}
 		}
@@ -507,32 +513,25 @@ public class MaskSetupScreen extends PApplet {
 		return false;
 	}
 
-	private boolean anyButtonPressed() {
-		return btnClearMatrix.eventType == GButton.PRESSED || btnFilter01.eventType == GButton.PRESSED || btnFilter02.eventType == GButton.PRESSED
-				|| btnFilter03.eventType == GButton.PRESSED || btnFilter04.eventType == GButton.PRESSED || btnFilter05.eventType == GButton.PRESSED
-				|| btnFilter06.eventType == GButton.PRESSED || btnFilter07.eventType == GButton.PRESSED || btnFilter08.eventType == GButton.PRESSED
-				|| btnFilter09.eventType == GButton.PRESSED;
-	}
-
 	private void clearMatrix() {
 		for (int i = 0; i < MAX_W; i++) {
 			for (int j = 0; j < MAX_H; j++) {
 				mask[i][j] = 0;
 			}
 		}
-		initializeMatrixCenter();
 	}
-	private void initializeMatrixCenter(){
-		mask[maskCenterX][maskCenterY]=1;
+
+	private void initializeMatrixCenter() {
+		mask[maskCenterX][maskCenterY] = 1;
 	}
 
 	public void keyPressed() {
-		isKeyPressed = true;
 		if (keyCode >= 49 && key <= 57 && !isKeyPressed) {
 			clickModifier = keyCode - 48;
 		} else if (keyCode == KeyEvent.VK_SHIFT) {
 			changeMaskCenter = true;
 		}
+		isKeyPressed = true;
 	}
 
 	public void keyReleased() {
@@ -554,9 +553,144 @@ public class MaskSetupScreen extends PApplet {
 			image.resize(MAX_IMG_W, MAX_IMG_H);
 		}
 	}
-	
-	private void exportImage(){
-		PImage originalFiltered = applyConvolution(this.normalizeMatrix(mask, w, h), w, h, originalImg);
+
+	private void exportImage() {
+		PImage originalFiltered = applyConvolution(this.normalizeMatrix(mask, maskWidth, maskHeight), maskWidth, maskHeight, originalImg);
 		originalFiltered.save("../export.png");
 	}
+
+	private boolean isActiveCell(int[][] matrix, int matrixSizeX, int matrixSizeY, int posX, int posY, int matrixCenterX, int matrixCenterY) {
+		if (isActiveX(matrix, matrixSizeX, matrixSizeY, posX, matrixCenterX) && isActiveY(matrix, matrixSizeX, matrixSizeY, posY, matrixCenterY)) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isActiveX(int[][] matrix, int matrixSizeX, int matrixSizeY, int posX, int matrixCenterX) {
+		if (posX < matrixCenterX) {
+			for (int i = 0; i <= posX; i++) {
+				for (int j = 0; j < matrixSizeY; j++) {
+					if (matrix[i][j] != 0) {
+						return true;
+					}
+				}
+			}
+		} else if (posX > matrixCenterX) {
+			for (int i = posX; i < matrixSizeX; i++) {
+				for (int j = 0; j < matrixSizeY; j++) {
+					if (matrix[i][j] != 0) {
+						return true;
+					}
+				}
+			}
+		} else if (posX == matrixCenterX) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isActiveY(int[][] matrix, int matrixSizeX, int matrixSizeY, int posY, int matrixCenterY) {
+		if (posY < matrixCenterY) {
+			for (int i = 0; i < matrixSizeX; i++) {
+				for (int j = 0; j <= posY; j++) {
+					if (matrix[i][j] != 0) {
+						return true;
+					}
+				}
+			}
+		} else if (posY > matrixCenterY) {
+			for (int i = 0; i < matrixSizeX; i++) {
+				for (int j = posY; j < matrixSizeY; j++) {
+					if (matrix[i][j] != 0) {
+						return true;
+					}
+				}
+			}
+		} else if (posY == matrixCenterY) {
+			return true;
+		}
+		return false;
+	}
+
+	private int findMinX(int[][] matrix, int matrixMaxSizeX, int matrixMaxSizeY) {
+		for (int i = 0; i < matrixMaxSizeX; i++) {
+			for (int j = 0; j < matrixMaxSizeY; j++) {
+				if (matrix[i][j] != 0) {
+					return i;
+				}
+			}
+		}
+		return 0;
+	}
+
+	private int findMinY(int[][] matrix, int matrixMaxSizeX, int matrixMaxSizeY) {
+		for (int j = 0; j < matrixMaxSizeY; j++) {
+			for (int i = 0; i < matrixMaxSizeX; i++) {
+				if (matrix[i][j] != 0) {
+					return j;
+				}
+			}
+		}
+		return 0;
+	}
+
+	private int findMaxX(int[][] matrix, int matrixMaxSizeX, int matrixMaxSizeY) {
+		for (int i = matrixMaxSizeX - 1; i >= 0; i--) {
+			for (int j = matrixMaxSizeY - 1; j >= 0; j--) {
+				if (matrix[i][j] != 0) {
+					return i;
+				}
+			}
+		}
+		return matrixMaxSizeX - 1;
+	}
+
+	private int findMaxY(int[][] matrix, int matrixMaxSizeX, int matrixMaxSizeY) {
+		for (int j = matrixMaxSizeY - 1; j >= 0; j--) {
+			for (int i = matrixMaxSizeX - 1; i >= 0; i--) {
+				if (matrix[i][j] != 0) {
+					return j;
+				}
+			}
+		}
+		return matrixMaxSizeY - 1;
+	}
+
+	private void calculateMatrixSize(int[][] matrix, int matrixMaxSizeX, int matrixMaxSizeY) {
+		maskXoffset = findMinX(matrix, matrixMaxSizeX, matrixMaxSizeY);
+		maskYoffset = findMinY(matrix, matrixMaxSizeX, matrixMaxSizeY);
+		maskWidth = findMaxX(matrix, matrixMaxSizeX, matrixMaxSizeY) - maskXoffset + 1;
+		maskHeight = findMaxY(matrix, matrixMaxSizeX, matrixMaxSizeY) - maskYoffset + 1;
+	}
+	
+	private void isOver(){
+		String displayText = "";
+		if(blurFilter.isOver(mouseX, mouseY)){
+			displayText = BLUR_DESC;
+		} else if(sharpenFilter.isOver(mouseX, mouseY)){
+			displayText = SHARPEN_DESC;
+		} else if(embossFilter.isOver(mouseX, mouseY)){
+			displayText = EMBOSS_DESC;
+		} else if(edgesFilter.isOver(mouseX, mouseY)){
+			displayText = EDGES_DESC;
+		} else if(negativeFilter.isOver(mouseX, mouseY)){
+			displayText = NEGATIVE_DESC;
+		} else if(blackAndWhiteFilter.isOver(mouseX, mouseY)){
+			displayText = BLACKWHITE_DESC;
+		} else if(thresholdFilter.isOver(mouseX, mouseY)){
+			displayText = THRESHOLD_DESC;
+		} else if(erosionFilter.isOver(mouseX, mouseY)){
+			displayText = EROSION_DESC;
+		} else if(dilateFilter.isOver(mouseX, mouseY)){
+			displayText = DILATION_DESC;
+		} else {
+			displayText = DISPLAY_TEXT;
+		}
+		fill(127);
+		noStroke();
+		rect(355, WINDOW_MARGIN, MAX_IMG_W, 85);
+		fill(255);
+		text(displayText,500,50);
+	}
+
 }
