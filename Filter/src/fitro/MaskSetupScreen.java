@@ -80,7 +80,7 @@ public class MaskSetupScreen extends PApplet {
 	private boolean isDilation = false;
 	private boolean isErosion = false;
 
-	private int threshold = 180;
+	private int threshold = 127;
 
 	@Override
 	public void setup() {
