@@ -423,16 +423,30 @@ public class MaskSetupScreen extends PApplet {
 			
 			// operacao pontual
 			if (negativeFilter.eventType == GButton.PRESSED) {
+				if (isNegative == true) {
+					isNegative = false;
+					negativeFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+				} else {
+					isNegative = true;
+					negativeFilter.setColorScheme(GCScheme.RED_SCHEME);
+				}
 				refreshFrame = true;
-				isNegative = true;
+				toggledFilter = true;
 				return;
 			}
 			if (blackAndWhiteFilter.eventType == GButton.PRESSED) {
+				if (isWhiteBlack == true) {
+					isWhiteBlack = false;
+					blackAndWhiteFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+				} else {
+					isWhiteBlack = true;
+					blackAndWhiteFilter.setColorScheme(GCScheme.RED_SCHEME);
+				}
 				refreshFrame = true;
-				isWhiteBlack = true;
+				toggledFilter = true;
 				return;
 			}
-			if (thresholdFilter.eventType == GButton.RELEASED) {
+			if (thresholdFilter.eventType == GButton.PRESSED) {
 				if (isThreshold == true) {
 					isThreshold = false;
 					thresholdFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
