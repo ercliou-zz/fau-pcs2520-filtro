@@ -840,6 +840,13 @@ public class MaskSetupScreen extends PApplet {
 		maskYoffset = findMinY(matrix, matrixMaxSizeX, matrixMaxSizeY);
 		maskWidth = findMaxX(matrix, matrixMaxSizeX, matrixMaxSizeY) - maskXoffset + 1;
 		maskHeight = findMaxY(matrix, matrixMaxSizeX, matrixMaxSizeY) - maskYoffset + 1;
+		
+		if((maskCenterX < maskXoffset || maskCenterX > (maskXoffset + maskWidth - 1)) ||
+				(maskCenterY < maskYoffset || maskCenterY > (maskYoffset + maskHeight - 1))){
+			maskCenterX = (maskXoffset + (maskXoffset + maskWidth))/2;
+			maskCenterY = (maskYoffset + (maskYoffset + maskHeight))/2;
+		}
+		
 	}
 	
 	private void isOver(){
