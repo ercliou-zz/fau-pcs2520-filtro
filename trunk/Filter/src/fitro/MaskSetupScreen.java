@@ -29,7 +29,7 @@ public class MaskSetupScreen extends PApplet {
 	GLabel labelMatrixSize;
 	// GTextField matrixW, matrixH;
 	GButton btnClearMatrix, blurFilter, negativeFilter, edgesFilter, sharpenFilter, blackAndWhiteFilter, thresholdFilter, embossFilter, dilateFilter,
-			erosionFilter, browseButton, saveButton, newFilter1, newFilter2, newFilter3, newFilter4, newFilter5;
+			erosionFilter, browseButton, saveButton, redFilter, newFilter2, newFilter3, brightFilter, saturationFilter;
 	
 	PGraphics2D setupScreen = new PGraphics2D();
 	PGraphics2D imageScreen = new PGraphics2D();
@@ -74,9 +74,14 @@ public class MaskSetupScreen extends PApplet {
 	private int[][] mask = new int[MAX_W][MAX_H];
 	private boolean isKeyPressed = false;
 	private boolean changeMaskCenter = false;
+	
 	private boolean isNegative = false;
 	private boolean isThreshold = false;
 	private boolean isWhiteBlack = false;
+	private boolean isRed = false;
+	private boolean isBright = false;
+	private boolean isSaturate = false;
+	
 	private boolean isDilation = false;
 	private boolean isErosion = false;
 
@@ -95,8 +100,9 @@ public class MaskSetupScreen extends PApplet {
 		embossFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		edgesFilter = new GButton(this, "Edges", 130, 215, 90, 25);
 		edgesFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		newFilter1 = new GButton(this, "TOIMPL", 130, 245, 90, 25);
-		newFilter1.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		newFilter3 = new GButton(this, "TOIMPL", 130, 245, 90, 25);
+		newFilter3.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		
 		newFilter2 = new GButton(this, "TOIMPL", 230, 245, 90, 25);
 		newFilter2.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		
@@ -106,12 +112,12 @@ public class MaskSetupScreen extends PApplet {
 		blackAndWhiteFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		thresholdFilter = new GButton(this, "Threshold", 130, 45, 90, 25);
 		thresholdFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		newFilter3 = new GButton(this, "TOIMPL", 30, 75, 90, 25);
-		newFilter3.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		newFilter4 = new GButton(this, "TOIMPL", 130, 75, 90, 25);
-		newFilter4.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		newFilter5 = new GButton(this, "TOIMPL", 230, 75, 90, 25);
-		newFilter5.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		redFilter = new GButton(this, "Red Only", 30, 75, 90, 25);
+		redFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		brightFilter = new GButton(this, "Brightness", 130, 75, 90, 25);
+		brightFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		saturationFilter = new GButton(this, "Saturation", 230, 75, 90, 25);
+		saturationFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		
 		dilateFilter = new GButton(this, "Dilation", 130, 145, 90, 25);
 		dilateFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
@@ -244,6 +250,31 @@ public class MaskSetupScreen extends PApplet {
 			rtotal = red(gray);
 			gtotal = green(gray);
 			btotal = blue(gray);
+		}
+		
+		if(isRed){
+			gtotal = 0;
+			btotal = 0;
+		}
+		if(isBright){
+			int clr = color((int)rtotal, (int)gtotal, (int)btotal );
+			colorMode(HSB);
+			float brt = brightness(clr)*1.5f;
+			clr = color(hue(clr),saturation(clr),brt<255?brt:255);
+			colorMode(RGB);
+			rtotal = red(clr);
+			gtotal = green(clr);
+			btotal = blue(clr);
+		}
+		if(isSaturate){
+			int clr = color((int)rtotal, (int)gtotal, (int)btotal );
+			colorMode(HSB);
+			float str = saturation(clr)*1.5f;
+			clr = color(hue(clr),str<255?str:255,brightness(clr));
+			colorMode(RGB);
+			rtotal = red(clr);
+			gtotal = green(clr);
+			btotal = blue(clr);
 		}
 
 		return color((int) rtotal, (int) gtotal, (int) btotal);
@@ -464,6 +495,18 @@ public class MaskSetupScreen extends PApplet {
 				toggledFilter = true;
 				return;
 			}
+			if (redFilter.eventType == GButton.PRESSED) {
+				if (isRed == true) {
+					isRed = false;
+					redFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+				} else {
+					isRed = true;
+					redFilter.setColorScheme(GCScheme.RED_SCHEME);
+				}
+				refreshFrame = true;
+				toggledFilter = true;
+				return;
+			}
 			if (blackAndWhiteFilter.eventType == GButton.PRESSED) {
 				if (isWhiteBlack == true) {
 					isWhiteBlack = false;
@@ -483,6 +526,30 @@ public class MaskSetupScreen extends PApplet {
 				} else {
 					isThreshold = true;
 					thresholdFilter.setColorScheme(GCScheme.RED_SCHEME);
+				}
+				refreshFrame = true;
+				toggledFilter = true;
+				return;
+			} 
+			if (saturationFilter.eventType == GButton.PRESSED) {
+				if (isSaturate == true) {
+					isSaturate = false;
+					saturationFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+				} else {
+					isSaturate = true;
+					saturationFilter.setColorScheme(GCScheme.RED_SCHEME);
+				}
+				refreshFrame = true;
+				toggledFilter = true;
+				return;
+			} 
+			if (brightFilter.eventType == GButton.PRESSED) {
+				if (isBright == true) {
+					isBright = false;
+					brightFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+				} else {
+					isBright = true;
+					brightFilter.setColorScheme(GCScheme.RED_SCHEME);
 				}
 				refreshFrame = true;
 				toggledFilter = true;
