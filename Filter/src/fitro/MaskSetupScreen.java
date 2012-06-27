@@ -5,15 +5,12 @@ import guicomponents.GButton;
 import guicomponents.GCScheme;
 import guicomponents.GComponent;
 import guicomponents.GFont;
-import guicomponents.GImageButton;
 import guicomponents.GLabel;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.swing.JFileChooser;
-
-import controlP5.Button;
 
 import processing.core.PApplet;
 import processing.core.PFont;
@@ -32,7 +29,7 @@ public class MaskSetupScreen extends PApplet {
 	GLabel labelMatrixSize;
 	// GTextField matrixW, matrixH;
 	GButton btnClearMatrix, blurFilter, negativeFilter, edgesFilter, sharpenFilter, blackAndWhiteFilter, thresholdFilter, embossFilter, dilateFilter,
-			erosionFilter, browseButton, saveButton, redFilter, newFilter2, newFilter3, brightFilter, saturationFilter;
+			erosionFilter, browseButton, saveButton, redFilter, multiFocalFilter, smudgeFilter, brightFilter, saturationFilter;
 	
 	PGraphics2D setupScreen = new PGraphics2D();
 	PGraphics2D imageScreen = new PGraphics2D();
@@ -103,11 +100,10 @@ public class MaskSetupScreen extends PApplet {
 		embossFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		edgesFilter = new GButton(this, "Edges", 130, 215, 90, 25);
 		edgesFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		newFilter3 = new GButton(this, "TOIMPL", 130, 245, 90, 25);
-		newFilter3.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		
-		newFilter2 = new GButton(this, "TOIMPL", 230, 245, 90, 25);
-		newFilter2.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		smudgeFilter = new GButton(this, "Smudge", 130, 245, 90, 25);
+		smudgeFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		multiFocalFilter = new GButton(this, "Multi-Focal", 230, 245, 90, 25);
+		multiFocalFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		
 		negativeFilter = new GButton(this, "Negative", 230, 45, 90, 25);
 		negativeFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
@@ -462,6 +458,28 @@ public class MaskSetupScreen extends PApplet {
 					}
 				}
 				mask[5][5] = 8;
+				refreshFrame = true;
+				return;
+			}
+			if (multiFocalFilter.eventType == GButton.PRESSED) {
+				clearMatrix();
+				maskWidth = 11;
+				maskHeight = 11;
+				maskCenterX = 5;
+				maskCenterY = 5;
+				mask[0][0]=mask[0][10]=mask[10][0]=mask[10][10] = -1;
+				refreshFrame = true;
+				return;
+			}
+			if(smudgeFilter.eventType == GButton.PRESSED){
+				clearMatrix();
+				maskWidth = 11;
+				maskHeight = 11;
+				maskCenterX = 5;
+				maskCenterY = 5;
+				for (int i = 0; i < maskWidth; i++) {
+					mask[i][i] = 1;
+				}
 				refreshFrame = true;
 				return;
 			}
