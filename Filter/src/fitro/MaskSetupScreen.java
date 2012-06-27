@@ -29,7 +29,7 @@ public class MaskSetupScreen extends PApplet {
 	GLabel labelMatrixSize;
 	// GTextField matrixW, matrixH;
 	GButton btnClearMatrix, blurFilter, negativeFilter, edgesFilter, sharpenFilter, blackAndWhiteFilter, thresholdFilter, embossFilter, dilateFilter,
-			erosionFilter, browseButton, saveButton;
+			erosionFilter, browseButton, saveButton, newFilter1, newFilter2, newFilter3, newFilter4, newFilter5;
 	
 	PGraphics2D setupScreen = new PGraphics2D();
 	PGraphics2D imageScreen = new PGraphics2D();
@@ -87,26 +87,38 @@ public class MaskSetupScreen extends PApplet {
 		GComponent.globalColor = GCScheme.getColor(this, GCScheme.YELLOW_SCHEME);
 		GComponent.globalFont = GFont.getFont(this, "Arial", 12);
 
-		blurFilter = new GButton(this, "Blur", 30, 50, 90, 25);
+		blurFilter = new GButton(this, "Blur", 30, 215, 90, 25);
 		blurFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		negativeFilter = new GButton(this, "Negative", 230, 160, 90, 25);
-		negativeFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		edgesFilter = new GButton(this, "Edges", 130, 50, 90, 25);
-		edgesFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		sharpenFilter = new GButton(this, "Sharpen", 230, 50, 90, 25);
+		sharpenFilter = new GButton(this, "Sharpen", 230, 215, 90, 25);
 		sharpenFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		blackAndWhiteFilter = new GButton(this, "Black & White", 30, 160, 90, 25);
-		blackAndWhiteFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		thresholdFilter = new GButton(this, "Threshold", 130, 160, 90, 25);
-		thresholdFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		embossFilter = new GButton(this, "Emboss", 30, 85, 90, 25);
+		embossFilter = new GButton(this, "Emboss", 30, 245, 90, 25);
 		embossFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		dilateFilter = new GButton(this, "Dilation", 130, 235, 90, 25);
+		edgesFilter = new GButton(this, "Edges", 130, 215, 90, 25);
+		edgesFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		newFilter1 = new GButton(this, "TOIMPL", 130, 245, 90, 25);
+		newFilter1.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		newFilter2 = new GButton(this, "TOIMPL", 230, 245, 90, 25);
+		newFilter2.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		
+		negativeFilter = new GButton(this, "Negative", 230, 45, 90, 25);
+		negativeFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		blackAndWhiteFilter = new GButton(this, "Black & White", 30, 45, 90, 25);
+		blackAndWhiteFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		thresholdFilter = new GButton(this, "Threshold", 130, 45, 90, 25);
+		thresholdFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		newFilter3 = new GButton(this, "TOIMPL", 30, 75, 90, 25);
+		newFilter3.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		newFilter4 = new GButton(this, "TOIMPL", 130, 75, 90, 25);
+		newFilter4.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		newFilter5 = new GButton(this, "TOIMPL", 230, 75, 90, 25);
+		newFilter5.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		
+		dilateFilter = new GButton(this, "Dilation", 130, 145, 90, 25);
 		dilateFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		erosionFilter = new GButton(this, "Erosion", 30, 235, 90, 25);
+		erosionFilter = new GButton(this, "Erosion", 30, 145, 90, 25);
 		erosionFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 
-		btnClearMatrix = new GButton(this, "Clear", 40, 605, 90, 25);
+		btnClearMatrix = new GButton(this, "Clear", 40, 603, 90, 25);
 		btnClearMatrix.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		browseButton = new GButton(this, "Browse...", 740,605, 90, 25);
 		browseButton.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
@@ -148,14 +160,19 @@ public class MaskSetupScreen extends PApplet {
 		fill(255);
 		noStroke();
 		fill(0xAA, 0xD5, 0xFF);
-		rect(WINDOW_MARGIN, 20, 315, 100);
-		rect(WINDOW_MARGIN, 130, 315, 65);
-		rect(WINDOW_MARGIN, 205, 205, 65);
-		rect(228, 195, 107, 75);
+		rect(WINDOW_MARGIN, 190, 315, 90);
+		rect(WINDOW_MARGIN, WINDOW_MARGIN, 315, 90);
+		rect(WINDOW_MARGIN, 120, 315, 60);
+		stroke(0xAA, 0xD5, 0xFF);
+		strokeWeight(2f);
+		noFill();
+		rect(WINDOW_MARGIN,190,315,445);
+		strokeWeight(1f);
+		
 		fill(255);
-		text("Filtros Lineares (Convolução)", 175, 40);
-		text("Operações Pontuais", 175, 150);
-		text("Filtros Não Lineares", 125, 225);
+		text("Filtros Lineares (Convolução)", 175, 208);
+		text("Operações Pontuais", 175, 38);
+		text("Filtros Não Lineares", 175, 138);
 		fill(0);
 		text("Matriz de Convolução", 175, 305);
 	}
