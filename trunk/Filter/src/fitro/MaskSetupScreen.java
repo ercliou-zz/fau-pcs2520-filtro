@@ -205,15 +205,28 @@ public class MaskSetupScreen extends PApplet {
 
 		/**** Point Operations ****/
 		if (isNegative) {
-			return color(255 - (int) rtotal, 255 - (int) gtotal, 255 - (int) btotal);
+			rtotal = 255 - rtotal;
+			gtotal = 255 - gtotal;
+			btotal = 255 - btotal;
 		}
 
 		if (isThreshold) {
-			return (rtotal + gtotal + btotal) > this.threshold ? color(255) : color(0);
+			if(brightness(color((int) rtotal, (int) gtotal, (int) btotal))> this.threshold){
+				rtotal = 255;
+				gtotal = 255;
+				btotal = 255;
+			} else {
+				rtotal = 0;
+				gtotal = 0;
+				btotal = 0;
+			}
 		}
 
 		if (isWhiteBlack) {
-			return color((int) (rtotal * 0.2125 + gtotal * 0.7154 + btotal * 0.072));
+			int gray = color((int) (rtotal * 0.2125 + gtotal * 0.7154 + btotal * 0.072));
+			rtotal = red(gray);
+			gtotal = green(gray);
+			btotal = blue(gray);
 		}
 
 		return color((int) rtotal, (int) gtotal, (int) btotal);
