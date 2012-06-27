@@ -5,12 +5,15 @@ import guicomponents.GButton;
 import guicomponents.GCScheme;
 import guicomponents.GComponent;
 import guicomponents.GFont;
+import guicomponents.GImageButton;
 import guicomponents.GLabel;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+
+import controlP5.Button;
 
 import processing.core.PApplet;
 import processing.core.PFont;
@@ -137,7 +140,7 @@ public class MaskSetupScreen extends PApplet {
 		textAlign(CENTER);
 		textFont(font, 16);
 		// img = loadImage("/Users/maryliagutierrez/Downloads/file.jpg");
-		img = loadImage("C:/file.jpg");
+		img = loadImage("C:/viena.jpg");
 		try {
 			originalImg = (PImage) img.clone();
 		} catch (CloneNotSupportedException e) {
@@ -217,7 +220,7 @@ public class MaskSetupScreen extends PApplet {
 		if (isDilation || isErosion) {
 			return dilationCalculation(img, mask, maskWidth, maskHeight, heightOffset, widthOffset);
 		}
-
+		
 		for (int j = 0; j < maskHeight; j++) {
 			for (int i = 0; i < maskWidth; i++) {
 				rtotal += red(original[(heightOffset + j) * img.width + (widthOffset + i)]) * mask[i + maskXoffset][j + maskYoffset];
@@ -399,6 +402,12 @@ public class MaskSetupScreen extends PApplet {
 		
 		isOver();
 		
+		if(anyButtonButNonLinearPressed()){
+			isErosion = isDilation = false;
+			erosionFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+			dilateFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+		}
+		
 		if (!toggledFilter) {
 			
 			// Controle
@@ -531,6 +540,7 @@ public class MaskSetupScreen extends PApplet {
 				toggledFilter = true;
 				return;
 			} 
+			
 			if (saturationFilter.eventType == GButton.PRESSED) {
 				if (isSaturate == true) {
 					isSaturate = false;
@@ -572,8 +582,18 @@ public class MaskSetupScreen extends PApplet {
 					}
 				}
 				mask[5][5] = 2;
+				if (isDilation == true) {
+					clearMatrix();
+					initializeMatrixCenter();
+					isDilation = false;
+					dilateFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+				} else {
+					clearToggles();
+					isDilation = true;
+					dilateFilter.setColorScheme(GCScheme.RED_SCHEME);
+				}
 				refreshFrame = true;
-				isDilation = true;
+				toggledFilter = true;
 				return;
 			}
 
@@ -584,6 +604,7 @@ public class MaskSetupScreen extends PApplet {
 				maskCenterY = 5;
 
 				clearMatrix();
+				
 				for (int i = 0; i < maskWidth; i++) {
 					for (int j = 0; j < maskHeight; j++) {
 						if (((i - 5) * (i - 5) + (j - 5) * (j - 5)) < 16)
@@ -591,11 +612,41 @@ public class MaskSetupScreen extends PApplet {
 					}
 				}
 				mask[5][5] = 2;
+				if (isErosion == true) {
+					clearMatrix();
+					initializeMatrixCenter();
+					isErosion = false;
+					erosionFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+				} else {
+					clearToggles();
+					isErosion = true;
+					erosionFilter.setColorScheme(GCScheme.RED_SCHEME);
+				}
 				refreshFrame = true;
-				isErosion = true;
+				toggledFilter = true;
+				refreshFrame = true;
 				return;
 			}
+			
 		}
+	}
+	
+	private void clearToggles(){
+		
+		isDilation = isErosion = isNegative = isThreshold = isWhiteBlack = false;
+		dilateFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+		erosionFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+		negativeFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+		thresholdFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+		blackAndWhiteFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+		
+	}
+	
+	
+	private boolean anyButtonButNonLinearPressed() {
+		return blurFilter.eventType == GButton.PRESSED || edgesFilter.eventType == GButton.PRESSED
+				|| sharpenFilter.eventType == GButton.PRESSED || embossFilter.eventType == GButton.PRESSED || blackAndWhiteFilter.eventType == GButton.PRESSED
+				|| thresholdFilter.eventType == GButton.PRESSED || negativeFilter.eventType == GButton.PRESSED;
 	}
 
 	private PImage pickImage() {
