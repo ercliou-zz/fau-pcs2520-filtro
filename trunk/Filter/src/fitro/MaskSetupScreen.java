@@ -13,6 +13,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 
 import processing.core.PApplet;
+import processing.core.PConstants;
 import processing.core.PFont;
 import processing.core.PGraphics2D;
 import processing.core.PImage;
@@ -29,7 +30,7 @@ public class MaskSetupScreen extends PApplet {
 	GLabel labelMatrixSize;
 	// GTextField matrixW, matrixH;
 	GButton btnClearMatrix, blurFilter, negativeFilter, edgesFilter, sharpenFilter, blackAndWhiteFilter, thresholdFilter, embossFilter, dilateFilter,
-			erosionFilter, browseButton, saveButton, redFilter, multiFocalFilter, smudgeFilter, brightFilter, saturationFilter;
+			erosionFilter, browseButton, saveButton, bitsFilter, multiFocalFilter, smudgeFilter, brightFilter, saturationFilter;
 	
 	PGraphics2D setupScreen = new PGraphics2D();
 	PGraphics2D imageScreen = new PGraphics2D();
@@ -52,6 +53,11 @@ public class MaskSetupScreen extends PApplet {
 	static final String DILATION_DESC = "dilation";
 	static final String EROSION_DESC = "erosion";
 	static final String DISPLAY_TEXT = "FILTROS FEDIDOS";
+	static final String COLORS_DESC = "COLORS";
+	static final String BRIGHTNESS_DESC = "BRIGHTNESS";
+	static final String SATURATION_DESC = "SATURATION";
+	static final String SMUDGE_DESC = "SMUDGE";
+	static final String MULTIFOCAL_DESC = "MULTI focaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaa\n aaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n aaaaaaaaaaaaaaaaaaaaaaaaaal";
 	
 	
 	int maskWidth = MAX_W;
@@ -78,7 +84,7 @@ public class MaskSetupScreen extends PApplet {
 	private boolean isNegative = false;
 	private boolean isThreshold = false;
 	private boolean isWhiteBlack = false;
-	private boolean isRed = false;
+	private boolean isBits = false;
 	private boolean isBright = false;
 	private boolean isSaturate = false;
 	
@@ -111,8 +117,8 @@ public class MaskSetupScreen extends PApplet {
 		blackAndWhiteFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		thresholdFilter = new GButton(this, "Threshold", 130, 45, 90, 25);
 		thresholdFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		redFilter = new GButton(this, "Red Only", 30, 75, 90, 25);
-		redFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
+		bitsFilter = new GButton(this, "64 Colors", 30, 75, 90, 25);
+		bitsFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		brightFilter = new GButton(this, "Brightness", 130, 75, 90, 25);
 		brightFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		saturationFilter = new GButton(this, "Saturation", 230, 75, 90, 25);
@@ -251,9 +257,11 @@ public class MaskSetupScreen extends PApplet {
 			btotal = blue(gray);
 		}
 		
-		if(isRed){
-			gtotal = 0;
-			btotal = 0;
+		if(isBits){
+			int value = 64;
+			rtotal = (((int) rtotal)/value)*value;
+			gtotal = (((int) gtotal)/value)*value;
+			btotal = (((int) btotal)/value)*value;
 		}
 		if(isBright){
 			int clr = color((int)rtotal, (int)gtotal, (int)btotal );
@@ -522,13 +530,13 @@ public class MaskSetupScreen extends PApplet {
 				toggledFilter = true;
 				return;
 			}
-			if (redFilter.eventType == GButton.PRESSED) {
-				if (isRed == true) {
-					isRed = false;
-					redFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+			if (bitsFilter.eventType == GButton.PRESSED) {
+				if (isBits == true) {
+					isBits = false;
+					bitsFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 				} else {
-					isRed = true;
-					redFilter.setColorScheme(GCScheme.RED_SCHEME);
+					isBits = true;
+					bitsFilter.setColorScheme(GCScheme.RED_SCHEME);
 				}
 				refreshFrame = true;
 				toggledFilter = true;
@@ -651,13 +659,13 @@ public class MaskSetupScreen extends PApplet {
 	
 	private void clearToggles(){
 		
-		isDilation = isErosion = isNegative = isThreshold = isWhiteBlack = isRed = isBright = isSaturate = false;
+		isDilation = isErosion = isNegative = isThreshold = isWhiteBlack = isBits = isBright = isSaturate = false;
 		dilateFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		erosionFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		negativeFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		thresholdFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		blackAndWhiteFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
-		redFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+		bitsFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		brightFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		saturationFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		
@@ -668,7 +676,7 @@ public class MaskSetupScreen extends PApplet {
 		return blurFilter.eventType == GButton.PRESSED || edgesFilter.eventType == GButton.PRESSED
 				|| sharpenFilter.eventType == GButton.PRESSED || embossFilter.eventType == GButton.PRESSED || blackAndWhiteFilter.eventType == GButton.PRESSED
 				|| thresholdFilter.eventType == GButton.PRESSED || negativeFilter.eventType == GButton.PRESSED
-				|| redFilter.eventType == GButton.PRESSED || brightFilter.eventType == GButton.PRESSED || saturationFilter.eventType == GButton.PRESSED;
+				|| bitsFilter.eventType == GButton.PRESSED || brightFilter.eventType == GButton.PRESSED || saturationFilter.eventType == GButton.PRESSED;
 	}
 
 	private PImage pickImage() {
@@ -869,7 +877,17 @@ public class MaskSetupScreen extends PApplet {
 			displayText = EROSION_DESC;
 		} else if(dilateFilter.isOver(mouseX, mouseY)){
 			displayText = DILATION_DESC;
-		} else {
+		} else if(bitsFilter.isOver(mouseX, mouseY)){
+			displayText = COLORS_DESC;
+		}else if(brightFilter.isOver(mouseX, mouseY)){
+			displayText = BRIGHTNESS_DESC;
+		}else if(saturationFilter.isOver(mouseX, mouseY)){
+			displayText = SATURATION_DESC;
+		}else if(smudgeFilter.isOver(mouseX, mouseY)){
+			displayText = SMUDGE_DESC;
+		}else if(multiFocalFilter.isOver(mouseX, mouseY)){
+			displayText = MULTIFOCAL_DESC;
+		}else {
 			displayText = DISPLAY_TEXT;
 		}
 		drawDescriptionBox(displayText);
@@ -880,7 +898,8 @@ public class MaskSetupScreen extends PApplet {
 		noStroke();
 		rect(355, WINDOW_MARGIN, MAX_IMG_W, 130);
 		fill(255);
-		text(displayText,500,50);
+		textAlign(PConstants.RIGHT);
+		text(displayText,900,50);
 	}
 
 }
