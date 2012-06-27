@@ -633,12 +633,15 @@ public class MaskSetupScreen extends PApplet {
 	
 	private void clearToggles(){
 		
-		isDilation = isErosion = isNegative = isThreshold = isWhiteBlack = false;
+		isDilation = isErosion = isNegative = isThreshold = isWhiteBlack = isRed = isBright = isSaturate = false;
 		dilateFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		erosionFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		negativeFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		thresholdFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		blackAndWhiteFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+		redFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+		brightFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
+		saturationFilter.setColorScheme(GCScheme.YELLOW_SCHEME);
 		
 	}
 	
@@ -646,7 +649,8 @@ public class MaskSetupScreen extends PApplet {
 	private boolean anyButtonButNonLinearPressed() {
 		return blurFilter.eventType == GButton.PRESSED || edgesFilter.eventType == GButton.PRESSED
 				|| sharpenFilter.eventType == GButton.PRESSED || embossFilter.eventType == GButton.PRESSED || blackAndWhiteFilter.eventType == GButton.PRESSED
-				|| thresholdFilter.eventType == GButton.PRESSED || negativeFilter.eventType == GButton.PRESSED;
+				|| thresholdFilter.eventType == GButton.PRESSED || negativeFilter.eventType == GButton.PRESSED
+				|| redFilter.eventType == GButton.PRESSED || brightFilter.eventType == GButton.PRESSED || saturationFilter.eventType == GButton.PRESSED;
 	}
 
 	private PImage pickImage() {
