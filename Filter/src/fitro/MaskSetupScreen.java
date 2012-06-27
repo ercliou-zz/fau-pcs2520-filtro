@@ -89,28 +89,28 @@ public class MaskSetupScreen extends PApplet {
 
 		blurFilter = new GButton(this, "Blur", 30, 50, 90, 25);
 		blurFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		negativeFilter = new GButton(this, "Negative", 230, 235, 90, 25);
+		negativeFilter = new GButton(this, "Negative", 230, 160, 90, 25);
 		negativeFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		edgesFilter = new GButton(this, "Edges", 130, 50, 90, 25);
 		edgesFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		sharpenFilter = new GButton(this, "Sharpen", 230, 50, 90, 25);
 		sharpenFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		blackAndWhiteFilter = new GButton(this, "Black & White", 30, 235, 90, 25);
+		blackAndWhiteFilter = new GButton(this, "Black & White", 30, 160, 90, 25);
 		blackAndWhiteFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		thresholdFilter = new GButton(this, "Threshold", 130, 235, 90, 25);
+		thresholdFilter = new GButton(this, "Threshold", 130, 160, 90, 25);
 		thresholdFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 		embossFilter = new GButton(this, "Emboss", 30, 85, 90, 25);
 		embossFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		dilateFilter = new GButton(this, "Dilation", 130, 160, 90, 25);
+		dilateFilter = new GButton(this, "Dilation", 130, 235, 90, 25);
 		dilateFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		erosionFilter = new GButton(this, "Erosion", 30, 160, 90, 25);
+		erosionFilter = new GButton(this, "Erosion", 30, 235, 90, 25);
 		erosionFilter.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 
 		btnClearMatrix = new GButton(this, "Clear", 40, 605, 90, 25);
 		btnClearMatrix.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		browseButton = new GButton(this, "Browse...", 740, 560, 90, 25);
+		browseButton = new GButton(this, "Browse...", 740,605, 90, 25);
 		browseButton.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
-		saveButton = new GButton(this, "Save", 840, 560, 90, 25);
+		saveButton = new GButton(this, "Save", 840, 605, 90, 25);
 		saveButton.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 
 		size(WINDOW_W, WINDOW_H);
@@ -147,16 +147,15 @@ public class MaskSetupScreen extends PApplet {
 		background(255);
 		fill(255);
 		noStroke();
-		// rect(WINDOW_MARGIN, WINDOW_MARGIN, WINDOW_W - 2 * WINDOW_MARGIN,
-		// WINDOW_H - 2 * WINDOW_MARGIN);
 		fill(0xAA, 0xD5, 0xFF);
 		rect(WINDOW_MARGIN, 20, 315, 100);
 		rect(WINDOW_MARGIN, 130, 315, 65);
-		rect(WINDOW_MARGIN, 205, 315, 65);
+		rect(WINDOW_MARGIN, 205, 205, 65);
+		rect(228, 195, 107, 75);
 		fill(255);
 		text("Filtros Lineares (Convolução)", 175, 40);
-		text("Filtros Não Lineares", 175, 150);
-		text("Operações Pontuais", 175, 225);
+		text("Operações Pontuais", 175, 150);
+		text("Filtros Não Lineares", 125, 225);
 		fill(0);
 		text("Matriz de Convolução", 175, 305);
 	}
@@ -164,8 +163,8 @@ public class MaskSetupScreen extends PApplet {
 	private void drawImage(PImage image) {
 		noStroke();
 		fill(63);
-		rect(355, 120, MAX_IMG_W, MAX_IMG_H);
-		image(filtered, 355 + (MAX_IMG_W - image.width) / 2, 120 + (MAX_IMG_H - image.height) / 2, image.width, image.height);
+		rect(355, 165, MAX_IMG_W, MAX_IMG_H);
+		image(filtered, 355 + (MAX_IMG_W - image.width) / 2, 165 + (MAX_IMG_H - image.height) / 2, image.width, image.height);
 	}
 
 	public PImage applyConvolution(float[][] mask, int maskWidth, int maskHeight, PImage img) {
@@ -340,6 +339,18 @@ public class MaskSetupScreen extends PApplet {
 		isOver();
 		
 		if (!toggledFilter) {
+			
+			// Controle
+			if (browseButton.eventType == GButton.PRESSED) {
+				img = pickImage();
+				this.resizeImage(img);
+				return;
+			}
+
+			if (saveButton.eventType == GButton.PRESSED) {
+				exportImage();
+				return;
+			}
 			if (btnClearMatrix.eventType == GButton.PRESSED) {
 				clearMatrix();
 				initializeMatrixCenter();
@@ -348,6 +359,7 @@ public class MaskSetupScreen extends PApplet {
 
 			}
 
+			// Filtros Lineares
 			if (blurFilter.eventType == GButton.PRESSED) {
 				clearMatrix();
 				maskWidth = 5;
@@ -367,49 +379,59 @@ public class MaskSetupScreen extends PApplet {
 				refreshFrame = true;
 				return;
 			}
-
+			if (edgesFilter.eventType == GButton.PRESSED) {
+				clearMatrix();
+				maskWidth = 3;
+				maskHeight = 3;
+				maskCenterX = 5;
+				maskCenterY = 5;
+				for (int i = 4; i < 4+maskWidth; i++) {
+					for (int j = 4; j < 4+maskHeight; j++) {
+						if (i != 5 || j != 5)
+							mask[i][j] = -1;
+					}
+				}
+				mask[5][5] = 8;
+				refreshFrame = true;
+				return;
+			}
+			if (sharpenFilter.eventType == GButton.PRESSED) {
+				clearMatrix();
+				maskWidth = 3;
+				maskHeight = 3;
+				maskCenterX = 5;
+				maskCenterY = 5;
+				mask[4][5] = mask[5][4] = mask[5][6] = mask[6][5] = -1;
+				mask[5][5] = 5;
+				refreshFrame = true;
+				return;
+			}
+			if (embossFilter.eventType == GButton.PRESSED) {
+				clearMatrix();
+				maskWidth = 3;
+				maskHeight = 3;
+				maskCenterX = 1 + 4;
+				maskCenterY = 1 + 4;
+				mask[0 + 4][0 + 4] = -2;
+				mask[0 + 4][1 + 4] = mask[1+4][0+4] = -1;
+				mask[0 + 4][2 + 4] = mask[2+4][0+4] = 0;
+				mask[1 + 4][1 + 4] = mask[1+4][2+4] = mask[2+4][1+4] = 1;
+				mask[2 + 4][2 + 4] = 2;
+				refreshFrame = true;
+				return;
+			}
+			
+			// operacao pontual
 			if (negativeFilter.eventType == GButton.PRESSED) {
 				refreshFrame = true;
 				isNegative = true;
 				return;
 			}
-
-			if (edgesFilter.eventType == GButton.PRESSED) { // edges
-				maskWidth = 3;
-				maskHeight = 3;
-				maskCenterX = 1;
-				maskCenterY = 1;
-				for (int i = 0; i < maskWidth; i++) {
-					for (int j = 0; j < maskHeight; j++) {
-						if (i != 1 || j != 1)
-							mask[i][j] = -1;
-					}
-				}
-				mask[1][1] = 8;
-				refreshFrame = true;
-				return;
-			}
-
-			if (sharpenFilter.eventType == GButton.PRESSED) { // sharpen
-				maskWidth = 3;
-				maskHeight = 3;
-				maskCenterX = 1;
-				maskCenterY = 1;
-
-				mask[0][0] = mask[0][2] = mask[2][0] = mask[2][2] = 0;
-				mask[0][1] = mask[1][0] = mask[1][2] = mask[2][1] = -1;
-				mask[1][1] = 5;
-
-				refreshFrame = true;
-				return;
-			}
-
 			if (blackAndWhiteFilter.eventType == GButton.PRESSED) {
 				refreshFrame = true;
 				isWhiteBlack = true;
 				return;
 			}
-			
 			if (thresholdFilter.eventType == GButton.RELEASED) {
 				if (isThreshold == true) {
 					isThreshold = false;
@@ -423,25 +445,9 @@ public class MaskSetupScreen extends PApplet {
 				return;
 			} 
 
-			if (embossFilter.eventType == GButton.PRESSED) { // emboss
-
-				maskWidth = 3;
-				maskHeight = 3;
-				maskCenterX = 1 + 4;
-				maskCenterY = 1 + 4;
-
-				mask[0 + 4][0 + 4] = -2;
-				mask[0 + 4][1 + 4] = mask[1][0] = -1;
-				mask[0 + 4][2 + 4] = mask[2][0] = 0;
-				mask[1 + 4][1 + 4] = mask[1][2] = mask[2][1] = 1;
-				mask[2 + 4][2 + 4] = 2;
-
-				refreshFrame = true;
-				return;
-			}
-
-			if (dilateFilter.eventType == GButton.PRESSED) { // dilation
-
+			// Filtros não lineares
+			if (dilateFilter.eventType == GButton.PRESSED) { 
+				
 				maskWidth = 11;
 				maskHeight = 11;
 				maskCenterX = 5;
@@ -460,7 +466,7 @@ public class MaskSetupScreen extends PApplet {
 				return;
 			}
 
-			if (erosionFilter.eventType == GButton.PRESSED) { // erosion
+			if (erosionFilter.eventType == GButton.PRESSED) { 
 				maskWidth = 11;
 				maskHeight = 11;
 				maskCenterX = 5;
@@ -476,17 +482,6 @@ public class MaskSetupScreen extends PApplet {
 				mask[5][5] = 2;
 				refreshFrame = true;
 				isErosion = true;
-				return;
-			}
-
-			if (browseButton.eventType == GButton.PRESSED) {
-				img = pickImage();
-				this.resizeImage(img);
-				return;
-			}
-
-			if (saveButton.eventType == GButton.PRESSED) {
-				exportImage();
 				return;
 			}
 		}
@@ -686,9 +681,13 @@ public class MaskSetupScreen extends PApplet {
 		} else {
 			displayText = DISPLAY_TEXT;
 		}
+		drawDescriptionBox(displayText);
+	}
+	
+	private void drawDescriptionBox(String displayText){
 		fill(127);
 		noStroke();
-		rect(355, WINDOW_MARGIN, MAX_IMG_W, 85);
+		rect(355, WINDOW_MARGIN, MAX_IMG_W, 130);
 		fill(255);
 		text(displayText,500,50);
 	}
