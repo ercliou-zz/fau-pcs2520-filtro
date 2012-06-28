@@ -43,23 +43,23 @@ public class MaskSetupScreen extends PApplet {
 	static final int WINDOW_H = 650;
 	static final int WINDOW_MARGIN = 20;
 
-	static final String BLUR_DESC = "Blur\n Suavização da imagem";
-	static final String SHARPEN_DESC = "Sharpen\n Aumenta nitidez da imagem";
-	static final String EMBOSS_DESC = "Emboss\n Cria relevo na imagem";
-	static final String EDGES_DESC = "Edge Detection\n Detecção das bordas";
-	static final String BLACKWHITE_DESC = "Black & White\n Muda cores da imagem para tons de cinza";
-	static final String NEGATIVE_DESC = "Negative\n Muda as cores para suas complementares";
-	static final String THRESHOLD_DESC = "Threshold\n Divide as cores em apenas duas classes";
-	static final String DILATION_DESC = "Dilation";
-	static final String EROSION_DESC = "Erosion";
+	static final String BLUR_DESC = "BLUR\n Suavização da imagem\nÉ feita a média dos valores dos pixels";
+	static final String SHARPEN_DESC = "SHARPEN\n Aumenta nitidez da imagem destacando as bordas";
+	static final String EMBOSS_DESC = "EMBOSS\n Cria relevo na imagem\n Um lado do pixel causa influência positiva e o outro negativa";
+	static final String EDGES_DESC = "EDGE DETECTION\n Detecção das bordas";
+	static final String BLACKWHITE_DESC = "BLACK & WHITE\n Muda cores da imagem para escala de cinza";
+	static final String NEGATIVE_DESC = "NEGATIVE\n Muda as cores para suas complementares";
+	static final String THRESHOLD_DESC = "THRESHOLD\n Se o pixel tem valor maior que um ponto pré determinado\nmuda seu valor para branco, caso contrário para preto";
+	static final String DILATION_DESC = "DILATION\nUtiliza o maior valor de cada subpixel(RGB)\n de uma área ao redor do pixel que será calculado";
+	static final String EROSION_DESC = "EROSION\nUtiliza o menor valor de cada subpixel(RGB)\n de uma área ao redor do pixel que será calculado";
 	static final String DISPLAY_TEXT = "PROCESSAMENTO DE IMAGEM\n " +
 			"							Operações pontuais: utilizam apenas o próprio pixel \npara cálculo do seu novo valor\n" +
 			"							Filtros: utilizam os pixels em torno do primeiro para calculo do seu novo valor";
-	static final String COLORS_DESC = "64 Colors\n Deixa a imagem com até 64 cores";
-	static final String BRIGHTNESS_DESC = "Brightness\n Aumenta brilho da imagem";
-	static final String SATURATION_DESC = "Saturation\n Aumenta saturação da imagem";
-	static final String SMUDGE_DESC = "Smudge\n ";
-	static final String MULTIFOCAL_DESC = "Multi Focal";
+	static final String COLORS_DESC = "64 COLORS\n Deixa a imagem com até 64 cores";
+	static final String BRIGHTNESS_DESC = "BRIGHTNESS\n Aumenta brilho da imagem";
+	static final String SATURATION_DESC = "SATURATION\n Aumenta saturação da imagem";
+	static final String SMUDGE_DESC = "SMUDGE\nDeslocamento da imagem na diagonal";
+	static final String MULTIFOCAL_DESC = "MULTI FOCAL\n";
 	
 	int maskWidth = MAX_W;
 	int maskHeight = MAX_H;
@@ -330,6 +330,7 @@ public class MaskSetupScreen extends PApplet {
 				fill(255);
 				rect(matrixOffsetX + i * cellSize, matrixOffsetY + j * cellSize, cellSize, cellSize);
 				fill(191);
+				textAlign(CENTER);
 				text((int) matrix[i][j], matrixOffsetX + i * cellSize + cellSize / 2, matrixOffsetY + j * cellSize + cellSize / 2 + 7);
 			}
 		}
@@ -418,6 +419,11 @@ public class MaskSetupScreen extends PApplet {
 			// Controle
 			if (browseButton.eventType == GButton.PRESSED) {
 				img = pickImage();
+				try {
+					originalImg = (PImage) img.clone();
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
 				this.resizeImage(img);
 				return;
 			}
