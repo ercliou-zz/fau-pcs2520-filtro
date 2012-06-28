@@ -43,22 +43,23 @@ public class MaskSetupScreen extends PApplet {
 	static final int WINDOW_H = 650;
 	static final int WINDOW_MARGIN = 20;
 
-	static final String BLUR_DESC = "Blur";
-	static final String SHARPEN_DESC = "Sharpen";
-	static final String EMBOSS_DESC = "emboss";
-	static final String EDGES_DESC = "edge detection";
-	static final String BLACKWHITE_DESC = "black & white";
-	static final String NEGATIVE_DESC = "negative";
-	static final String THRESHOLD_DESC = "threshold";
-	static final String DILATION_DESC = "dilation";
-	static final String EROSION_DESC = "erosion";
-	static final String DISPLAY_TEXT = "FILTROS FEDIDOS";
-	static final String COLORS_DESC = "COLORS";
-	static final String BRIGHTNESS_DESC = "BRIGHTNESS";
-	static final String SATURATION_DESC = "SATURATION";
-	static final String SMUDGE_DESC = "SMUDGE";
-	static final String MULTIFOCAL_DESC = "MULTI focaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaa\n aaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n aaaaaaaaaaaaaaaaaaaaaaaaaal";
-	
+	static final String BLUR_DESC = "Blur\n Suavização da imagem";
+	static final String SHARPEN_DESC = "Sharpen\n Aumenta nitidez da imagem";
+	static final String EMBOSS_DESC = "Emboss\n Cria relevo na imagem";
+	static final String EDGES_DESC = "Edge Detection\n Detecção das bordas";
+	static final String BLACKWHITE_DESC = "Black & White\n Muda cores da imagem para tons de cinza";
+	static final String NEGATIVE_DESC = "Negative\n Muda as cores para suas complementares";
+	static final String THRESHOLD_DESC = "Threshold\n Divide as cores em apenas duas classes";
+	static final String DILATION_DESC = "Dilation";
+	static final String EROSION_DESC = "Erosion";
+	static final String DISPLAY_TEXT = "PROCESSAMENTO DE IMAGEM\n " +
+			"							Operações pontuais: utilizam apenas o próprio pixel \npara cálculo do seu novo valor\n" +
+			"							Filtros: utilizam os pixels em torno do primeiro para calculo do seu novo valor";
+	static final String COLORS_DESC = "64 Colors\n Deixa a imagem com até 64 cores";
+	static final String BRIGHTNESS_DESC = "Brightness\n Aumenta brilho da imagem";
+	static final String SATURATION_DESC = "Saturation\n Aumenta saturação da imagem";
+	static final String SMUDGE_DESC = "Smudge\n ";
+	static final String MULTIFOCAL_DESC = "Multi Focal";
 	
 	int maskWidth = MAX_W;
 	int maskHeight = MAX_H;
@@ -142,7 +143,7 @@ public class MaskSetupScreen extends PApplet {
 		textAlign(CENTER);
 		textFont(font, 16);
 		// img = loadImage("/Users/maryliagutierrez/Downloads/file.jpg");
-		img = loadImage("C:/viena.jpg");
+		img = loadImage("../../lib/viena.jpg");
 		try {
 			originalImg = (PImage) img.clone();
 		} catch (CloneNotSupportedException e) {
