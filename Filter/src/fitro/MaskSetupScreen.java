@@ -59,21 +59,21 @@ public class MaskSetupScreen extends PApplet {
 	static final String DILATION_TITLE = "DILATION";
 	static final String MULTIFOCAL_TITLE = "MULTI FOCAL";
 	
-	static final String BLUR_DESC = "BLUR\n Suavização da imagem\nÉ feita a média dos valores dos pixels";
+	static final String BLUR_DESC = "BLUR\n SuavizaÔøΩÔøΩo da imagem\nÔøΩ feita a mÔøΩdia dos valores dos pixels";
 	static final String SHARPEN_DESC = "SHARPEN\n Aumenta nitidez da imagem destacando as bordas";
-	static final String EMBOSS_DESC = "EMBOSS\n Cria relevo na imagem\n Um lado do pixel causa influência positiva e o outro negativa";
-	static final String EDGES_DESC = "EDGE DETECTION\n Detecção das bordas";
+	static final String EMBOSS_DESC = "EMBOSS\n Cria relevo na imagem\n Um lado do pixel causa influÔøΩncia positiva e o outro negativa";
+	static final String EDGES_DESC = "EDGE DETECTION\n DetecÔøΩÔøΩo das bordas";
 	static final String BLACKWHITE_DESC = "BLACK & WHITE\n Muda cores da imagem para escala de cinza";
 	static final String NEGATIVE_DESC = "NEGATIVE\n Muda as cores para suas complementares";
-	static final String THRESHOLD_DESC = "THRESHOLD\n Se o pixel tem valor maior que um ponto pré determinado\nmuda seu valor para branco, caso contrário para preto";
-	static final String DILATION_DESC = "DILATION\nUtiliza o maior valor de cada subpixel(RGB)\n de uma área ao redor do pixel que será calculado";
-	static final String EROSION_DESC = "EROSION\nUtiliza o menor valor de cada subpixel(RGB)\n de uma área ao redor do pixel que será calculado";
+	static final String THRESHOLD_DESC = "THRESHOLD\n Se o pixel tem valor maior que um ponto prÔøΩ determinado\nmuda seu valor para branco, caso contrÔøΩrio para preto";
+	static final String DILATION_DESC = "DILATION\nUtiliza o maior valor de cada subpixel(RGB)\n de uma ÔøΩrea ao redor do pixel que serÔøΩ calculado";
+	static final String EROSION_DESC = "EROSION\nUtiliza o menor valor de cada subpixel(RGB)\n de uma ÔøΩrea ao redor do pixel que serÔøΩ calculado";
 	static final String DISPLAY_TEXT = "PROCESSAMENTO DE IMAGEM\n " +
-			"							Operações pontuais: utilizam apenas o próprio pixel \npara cálculo do seu novo valor\n" +
+			"							OperaÔøΩÔøΩes pontuais: utilizam apenas o prÔøΩprio pixel \npara cÔøΩlculo do seu novo valor\n" +
 			"							Filtros: utilizam os pixels em torno do primeiro para calculo do seu novo valor";
-	static final String COLORS_DESC = "64 COLORS\n Deixa a imagem com até 64 cores";
+	static final String COLORS_DESC = "64 COLORS\n Deixa a imagem com atÔøΩ 64 cores";
 	static final String BRIGHTNESS_DESC = "BRIGHTNESS\n Aumenta brilho da imagem";
-	static final String SATURATION_DESC = "SATURATION\n Aumenta saturação da imagem";
+	static final String SATURATION_DESC = "SATURATION\n Aumenta saturaÔøΩÔøΩo da imagem";
 	static final String SMUDGE_DESC = "SMUDGE\nDeslocamento da imagem na diagonal";
 	static final String MULTIFOCAL_DESC = "MULTI FOCAL\n";
 	
@@ -198,11 +198,12 @@ public class MaskSetupScreen extends PApplet {
 		strokeWeight(1f);
 		
 		fill(255);
-		text("Filtros Lineares (ConvoluÁ„o)", 175, 208);
-		text("OperaÁıes Pontuais", 175, 38);
-		text("Filtros N„o Lineares", 175, 138);
+		textAlign(CENTER);
+		text("Filtros Lineares (Convolu√ß√£o)", 175, 208);
+		text("Opera√ß√µes Pontuais", 175, 38);
+		text("Filtros N√£o Lineares", 175, 138);
 		fill(0);
-		text("Matriz de ConvoluÁ„o", 175, 305);
+		text("Matriz de Convolu√ß√£o", 175, 305);
 	}
 
 	private void drawImage(PImage image) {
@@ -434,13 +435,18 @@ public class MaskSetupScreen extends PApplet {
 			
 			// Controle
 			if (browseButton.eventType == GButton.PRESSED) {
+				PImage oldImage = img;
 				img = pickImage();
-				try {
-					originalImg = (PImage) img.clone();
-				} catch (CloneNotSupportedException e) {
-					e.printStackTrace();
+				if(img != null) {
+					try {
+						originalImg = (PImage) img.clone();
+					} catch (CloneNotSupportedException e) {
+						e.printStackTrace();
+					}
+					this.resizeImage(img);
+				} else {
+					img = oldImage;
 				}
-				this.resizeImage(img);
 				return;
 			}
 
@@ -615,7 +621,7 @@ public class MaskSetupScreen extends PApplet {
 				return;
 			} 
 
-			// Filtros n„o lineares
+			// Filtros n√£o lineares
 			if (dilateFilter.eventType == GButton.PRESSED) { 
 				
 				maskWidth = 11;
@@ -765,7 +771,7 @@ public class MaskSetupScreen extends PApplet {
 	}
 
 	private void exportImage() {
-		PImage originalFiltered = applyConvolution(this.normalizeMatrix(mask, maskWidth, maskHeight), maskWidth, maskHeight, originalImg);
+		PImage originalFiltered = applyConvolution(this.normalizeMatrix(mask, MAX_W, MAX_H), maskWidth, maskHeight, originalImg);
 		originalFiltered.save("../export.png");
 	}
 
