@@ -44,36 +44,37 @@ public class MaskSetupScreen extends PApplet {
 	static final int WINDOW_MARGIN = 20;
 
 	static final String BLUR_TITLE = "BLUR";
-	static final String BLUR_DESC = "BLUR\n Suavização da imagem\nÉ feita a média dos valores dos pixels";
 	static final String SHARPEN_TITLE = "SHARPEN";
-	static final String SHARPEN_DESC = "SHARPEN\n Aumenta nitidez da imagem destacando as bordas";
-	static final String EMBOSS_TITLE = "EMBOSS";
-	static final String EMBOSS_DESC = "EMBOSS\n Cria relevo na imagem\n Um lado do pixel causa influência positiva e o outro negativa";
+	static final String BRIGHTNESS_TITLE = "BRIGHTNESS";
 	static final String EDGES_TITLE = "EDGE DETECTION";
-	static final String EDGES_DESC = "EDGE DETECTION\n Detecção das bordas";
+	static final String EMBOSS_TITLE = "EMBOSS";
 	static final String BLACKWHITE_TITLE = "BLACK & WHITE";
-	static final String BLACKWHITE_DESC = "BLACK & WHITE\n Muda cores da imagem para escala de cinza";
 	static final String NEGATIVE_TITLE = "NEGATIVE";
-	static final String NEGATIVE_DESC = "NEGATIVE\n Muda as cores para suas complementares";
+	static final String SATURATION_TITLE = "SATURATION";
+	static final String SMUDGE_TITLE = "SMUDGE";
 	static final String THRESHOLD_TITLE = "THRESHOLD";
-	static final String THRESHOLD_DESC = "THRESHOLD\n Se o pixel tem valor maior que um ponto pré determinado\nmuda seu valor para branco, caso contrário para preto";
-	static final String DILATION_TITLE = "DILATION";
-	static final String DILATION_DESC = "DILATION\nUtiliza o maior valor de cada subpixel(RGB)\n de uma área ao redor do pixel que será calculado";
-	static final String EROSION_TITLE = "EROSION";
-	static final String EROSION_DESC = "EROSION\nUtiliza o menor valor de cada subpixel(RGB)\n de uma área ao redor do pixel que será calculado";
 	static final String DISPLAY_TITLE = "PROCESSAMENTO DE IMAGEM";
+	static final String COLORS_TITLE = "64 COLORS";
+	static final String EROSION_TITLE = "EROSION";
+	static final String DILATION_TITLE = "DILATION";
+	static final String MULTIFOCAL_TITLE = "MULTI FOCAL";
+	
+	static final String BLUR_DESC = "BLUR\n Suavização da imagem\nÉ feita a média dos valores dos pixels";
+	static final String SHARPEN_DESC = "SHARPEN\n Aumenta nitidez da imagem destacando as bordas";
+	static final String EMBOSS_DESC = "EMBOSS\n Cria relevo na imagem\n Um lado do pixel causa influência positiva e o outro negativa";
+	static final String EDGES_DESC = "EDGE DETECTION\n Detecção das bordas";
+	static final String BLACKWHITE_DESC = "BLACK & WHITE\n Muda cores da imagem para escala de cinza";
+	static final String NEGATIVE_DESC = "NEGATIVE\n Muda as cores para suas complementares";
+	static final String THRESHOLD_DESC = "THRESHOLD\n Se o pixel tem valor maior que um ponto pré determinado\nmuda seu valor para branco, caso contrário para preto";
+	static final String DILATION_DESC = "DILATION\nUtiliza o maior valor de cada subpixel(RGB)\n de uma área ao redor do pixel que será calculado";
+	static final String EROSION_DESC = "EROSION\nUtiliza o menor valor de cada subpixel(RGB)\n de uma área ao redor do pixel que será calculado";
 	static final String DISPLAY_TEXT = "PROCESSAMENTO DE IMAGEM\n " +
 			"							Operações pontuais: utilizam apenas o próprio pixel \npara cálculo do seu novo valor\n" +
 			"							Filtros: utilizam os pixels em torno do primeiro para calculo do seu novo valor";
-	static final String COLORS_TITLE = "64 COLORS";
 	static final String COLORS_DESC = "64 COLORS\n Deixa a imagem com até 64 cores";
-	static final String BRIGHTNESS_TITLE = "BRIGHTNESS";
 	static final String BRIGHTNESS_DESC = "BRIGHTNESS\n Aumenta brilho da imagem";
-	static final String SATURATION_TITLE = "SATURATION";
 	static final String SATURATION_DESC = "SATURATION\n Aumenta saturação da imagem";
-	static final String SMUDGE_TITLE = "SMUDGE";
 	static final String SMUDGE_DESC = "SMUDGE\nDeslocamento da imagem na diagonal";
-	static final String MULTIFOCAL_TITLE = "MULTI FOCAL";
 	static final String MULTIFOCAL_DESC = "MULTI FOCAL\n";
 	
 	int maskWidth = MAX_W;
