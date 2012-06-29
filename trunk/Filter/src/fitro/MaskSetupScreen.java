@@ -42,7 +42,7 @@ public class MaskSetupScreen extends PApplet {
 	static final int WINDOW_W = 950;
 	static final int WINDOW_H = 650;
 	static final int WINDOW_MARGIN = 20;
-
+	
 	static final String BLUR_TITLE = "BLUR";
 	static final String SHARPEN_TITLE = "SHARPEN";
 	static final String BRIGHTNESS_TITLE = "BRIGHTNESS";
@@ -58,24 +58,25 @@ public class MaskSetupScreen extends PApplet {
 	static final String EROSION_TITLE = "EROSION";
 	static final String DILATION_TITLE = "DILATION";
 	static final String MULTIFOCAL_TITLE = "MULTI FOCAL";
-	
-	static final String BLUR_DESC = "BLUR\n Suaviza��o da imagem\n� feita a m�dia dos valores dos pixels";
-	static final String SHARPEN_DESC = "SHARPEN\n Aumenta nitidez da imagem destacando as bordas";
-	static final String EMBOSS_DESC = "EMBOSS\n Cria relevo na imagem\n Um lado do pixel causa influ�ncia positiva e o outro negativa";
-	static final String EDGES_DESC = "EDGE DETECTION\n Detec��o das bordas";
-	static final String BLACKWHITE_DESC = "BLACK & WHITE\n Muda cores da imagem para escala de cinza";
-	static final String NEGATIVE_DESC = "NEGATIVE\n Muda as cores para suas complementares";
-	static final String THRESHOLD_DESC = "THRESHOLD\n Se o pixel tem valor maior que um ponto pr� determinado\nmuda seu valor para branco, caso contr�rio para preto";
-	static final String DILATION_DESC = "DILATION\nUtiliza o maior valor de cada subpixel(RGB)\n de uma �rea ao redor do pixel que ser� calculado";
-	static final String EROSION_DESC = "EROSION\nUtiliza o menor valor de cada subpixel(RGB)\n de uma �rea ao redor do pixel que ser� calculado";
-	static final String DISPLAY_TEXT = "PROCESSAMENTO DE IMAGEM\n " +
-			"							Opera��es pontuais: utilizam apenas o pr�prio pixel \npara c�lculo do seu novo valor\n" +
+
+	static final String BLUR_DESC = "Suavização da imagem é feita com a média dos valores dos pixels. \nA matriz de Convolução representa uma média aritmética dos\n pixels ao redor do pixel que será calculado.";
+	static final String SHARPEN_DESC = "Aumenta nitidez da imagem destacando as bordas.\nA matriz de Convolução é similar a de detecção de bordas reforçando o pixel que será calculado.\n";
+	static final String EMBOSS_DESC = "Cria relevo na imagem\n Um lado do pixel causa influência positiva e o outro negativa";
+	static final String EDGES_DESC = "Detecção das bordas.\nA matriz de convolução calcula a diferença entre pixel central e os ao redor dele.";
+	static final String BLACKWHITE_DESC = "Muda cores da imagem para escala de cinza";
+	static final String NEGATIVE_DESC = "Muda as cores para suas complementares";
+	static final String THRESHOLD_DESC = "Se o pixel tem valor maior que um ponto pré determinado\nmuda seu valor para branco, caso contrário para preto";
+	static final String DILATION_DESC = "Utiliza o maior valor de cada subpixel(RGB)\n de uma área ao redor do pixel que será calculado\nOs valores da matriz apenas representam a área que\ndelimita os pixels utilizados no cálculo da cor de cada pixel";
+	static final String EROSION_DESC = "Utiliza o menor valor de cada subpixel(RGB)\n de uma área ao redor do pixel que será calculado\nOs valores da matriz apenas representam a área que\ndelimita os pixels utilizados no cálculo da cor de cada pixel";
+	static final String DISPLAY_TEXT = "Operações pontuais: utilizam apenas o próprio pixel para cálculo do seu novo valor\n" +
 			"							Filtros: utilizam os pixels em torno do primeiro para calculo do seu novo valor";
-	static final String COLORS_DESC = "64 COLORS\n Deixa a imagem com at� 64 cores";
-	static final String BRIGHTNESS_DESC = "BRIGHTNESS\n Aumenta brilho da imagem";
-	static final String SATURATION_DESC = "SATURATION\n Aumenta satura��o da imagem";
-	static final String SMUDGE_DESC = "SMUDGE\nDeslocamento da imagem na diagonal";
-	static final String MULTIFOCAL_DESC = "MULTI FOCAL\n";
+	static final String COLORS_DESC = "Deixa a imagem com até 64 cores\nDefinindo a cor de cada pixel para o valor válido mais próximo.";
+	static final String BRIGHTNESS_DESC = "Aumenta brilho da imagem.\nBrilho (HSB) de cada pixel é aumentado em 50%.";
+	static final String SATURATION_DESC = "Aumenta saturação da imagem. \nSaturação (HSB) de cada pixel é aumentado em 50%. ";
+	static final String SMUDGE_DESC = "Deslocamento da imagem na diagonal.\nA imagem é borrada diagonalmente com sobreposições da imagem original.";
+	static final String MULTIFOCAL_DESC = "A matriz de Convolução representa a sobreposição de 4 imagens do original.";
+	
+	static final String TITULO = "TITULO";
 	
 	int maskWidth = MAX_W;
 	int maskHeight = MAX_H;
@@ -158,6 +159,7 @@ public class MaskSetupScreen extends PApplet {
 
 		textAlign(CENTER);
 		textFont(font, 16);
+		textLeading(15);
 		// img = loadImage("/Users/maryliagutierrez/Downloads/file.jpg");
 		img = loadImage("../../lib/viena.jpg");
 		try {
@@ -888,47 +890,72 @@ public class MaskSetupScreen extends PApplet {
 	
 	private void isOver(){
 		String displayText = "";
+		String titleText = "";
 		if(blurFilter.isOver(mouseX, mouseY)){
 			displayText = BLUR_DESC;
+			titleText = BLUR_TITLE;
 		} else if(sharpenFilter.isOver(mouseX, mouseY)){
 			displayText = SHARPEN_DESC;
+			titleText = SHARPEN_TITLE;
 		} else if(embossFilter.isOver(mouseX, mouseY)){
 			displayText = EMBOSS_DESC;
+			titleText = EMBOSS_TITLE;
 		} else if(edgesFilter.isOver(mouseX, mouseY)){
 			displayText = EDGES_DESC;
+			titleText = EDGES_TITLE;
 		} else if(negativeFilter.isOver(mouseX, mouseY)){
 			displayText = NEGATIVE_DESC;
+			titleText = NEGATIVE_TITLE;
 		} else if(blackAndWhiteFilter.isOver(mouseX, mouseY)){
 			displayText = BLACKWHITE_DESC;
+			titleText = NEGATIVE_TITLE;
 		} else if(thresholdFilter.isOver(mouseX, mouseY)){
 			displayText = THRESHOLD_DESC;
+			titleText = THRESHOLD_TITLE;
 		} else if(erosionFilter.isOver(mouseX, mouseY)){
 			displayText = EROSION_DESC;
+			titleText = EROSION_TITLE;
 		} else if(dilateFilter.isOver(mouseX, mouseY)){
 			displayText = DILATION_DESC;
+			titleText = DILATION_TITLE;
 		} else if(bitsFilter.isOver(mouseX, mouseY)){
 			displayText = COLORS_DESC;
+			titleText = COLORS_TITLE;
 		}else if(brightFilter.isOver(mouseX, mouseY)){
 			displayText = BRIGHTNESS_DESC;
+			titleText = BRIGHTNESS_TITLE;
 		}else if(saturationFilter.isOver(mouseX, mouseY)){
 			displayText = SATURATION_DESC;
+			titleText = SATURATION_TITLE;
 		}else if(smudgeFilter.isOver(mouseX, mouseY)){
 			displayText = SMUDGE_DESC;
+			titleText = SMUDGE_TITLE;
 		}else if(multiFocalFilter.isOver(mouseX, mouseY)){
 			displayText = MULTIFOCAL_DESC;
+			titleText = MULTIFOCAL_TITLE;
 		}else {
 			displayText = DISPLAY_TEXT;
+			titleText = DISPLAY_TITLE;
 		}
-		drawDescriptionBox(displayText);
+		drawDescriptionBox(displayText, titleText);
 	}
 	
-	private void drawDescriptionBox(String displayText){
+	private void drawDescriptionBox(String displayText, String titleText){
 		fill(127);
 		noStroke();
 		rect(355, WINDOW_MARGIN, MAX_IMG_W, 130);
 		fill(255);
 		textAlign(PConstants.RIGHT);
-		text(displayText,900,50);
+		
+		textFont(font, 14);
+		textLeading(15);
+		text(displayText,900,70);
+		
+		textFont(font, 16);
+		textLeading(15);
+		text(titleText,900,45);
+		
+		
 	}
 
 }
