@@ -111,6 +111,10 @@ public class MaskSetupScreen extends PApplet {
 
 	private int threshold = 127;
 
+	public static void main(String args[]){
+		PApplet.main(new String[] { fitro.MaskSetupScreen.class.getName() });
+    }
+	
 	@Override
 	public void setup() {
 		GComponent.globalColor = GCScheme.getColor(this, GCScheme.YELLOW_SCHEME);
@@ -154,14 +158,15 @@ public class MaskSetupScreen extends PApplet {
 		saveButton = new GButton(this, "Save", 840, 605, 90, 25);
 		saveButton.setTextAlign(GAlign.CENTER | GAlign.MIDDLE);
 
-		size(WINDOW_W, WINDOW_H);
+//		size(WINDOW_W, WINDOW_H);
+		size(950,650);
 		font = loadFont("../ArialMT-16.vlw");
 
 		textAlign(CENTER);
 		textFont(font, 16);
 		textLeading(15);
 		// img = loadImage("/Users/maryliagutierrez/Downloads/file.jpg");
-		img = loadImage("../../lib/viena.jpg");
+		img = loadImage("../viena.jpg");
 		try {
 			originalImg = (PImage) img.clone();
 		} catch (CloneNotSupportedException e) {
